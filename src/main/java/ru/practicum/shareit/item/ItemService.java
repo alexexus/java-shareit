@@ -26,6 +26,7 @@ public class ItemService {
     }
 
     public Item updateItem(Item item, long userId, long itemId) {
+        getItemById(itemId);
         if (getItemById(itemId).getOwner() != userId) {
             throw new NotFoundException("User not exist");
         }
@@ -33,6 +34,7 @@ public class ItemService {
     }
 
     public void deleteItem(long itemId) {
+        getItemById(itemId);
         itemDao.deleteItem(itemId);
     }
 
@@ -44,6 +46,7 @@ public class ItemService {
     }
 
     public List<Item> getAllItemsByUserId(long userId) {
+        userDao.getUserById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         return itemDao.getAllItemsByUserId(userId);
     }
 }

@@ -54,6 +54,7 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public void deleteItem(long itemId) {
+        userItemIndex.get(items.get(itemId).getOwner()).remove(items.get(itemId));
         items.remove(itemId);
     }
 
@@ -68,6 +69,6 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public List<Item> getAllItemsByUserId(long userId) {
-        return userItemIndex.get(userId);
+        return userItemIndex.getOrDefault(userId, List.of());
     }
 }

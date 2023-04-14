@@ -14,20 +14,17 @@ import ru.practicum.shareit.OnCreate;
 import ru.practicum.shareit.OnUpdate;
 import ru.practicum.shareit.user.dto.UserDto;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
-@Validated
 public class UserController {
     private final UserService userService;
 
     @PostMapping
-    @Validated(OnCreate.class)
-    public UserDto addUser(@Valid @RequestBody UserDto userDto) {
+    public UserDto addUser(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
         return UserMapper.toUserDto(userService.addUser(UserMapper.toUser(userDto)));
     }
 
@@ -37,8 +34,7 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    @Validated(OnUpdate.class)
-    public UserDto updateUser(@Valid @RequestBody UserDto userDto,
+    public UserDto updateUser(@Validated(OnUpdate.class) @RequestBody UserDto userDto,
                               @PathVariable long userId) {
         userDto.setId(userId);
         return UserMapper.toUserDto(userService.updateUser(UserMapper.toUser(userDto)));

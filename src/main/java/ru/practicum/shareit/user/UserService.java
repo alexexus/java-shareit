@@ -24,13 +24,13 @@ public class UserService {
     }
 
     public User updateUser(User user) {
-        userDao.getUserById(user.getId());
+        getUserById(user.getId());
         checkEmail(user);
         return userDao.updateUser(user);
     }
 
     public void deleteUser(long id) {
-        userDao.getUserById(id);
+        getUserById(id);
         userDao.deleteUser(id);
     }
 

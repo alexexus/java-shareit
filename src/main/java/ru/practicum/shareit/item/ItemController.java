@@ -15,22 +15,19 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.OnCreate;
 import ru.practicum.shareit.item.dto.ItemDto;
 
-import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
-@Validated
 public class ItemController {
 
     private final ItemService itemService;
 
     @PostMapping
-    @Validated(OnCreate.class)
     public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @Valid @RequestBody ItemDto itemDto) {
+                           @Validated(OnCreate.class) @RequestBody ItemDto itemDto) {
         return ItemMapper.toItemDto(itemService.addItem(ItemMapper.toItem(itemDto), userId));
     }
 
