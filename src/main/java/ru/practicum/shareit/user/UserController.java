@@ -10,13 +10,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.practicum.shareit.OnCreate;
+import ru.practicum.shareit.OnUpdate;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- */
 @RestController
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
@@ -25,20 +26,22 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping
-    public User addUser(@Valid @RequestBody User user) {
-        return userService.addUser(user);
+    @Validated(OnCreate.class)
+    public UserDto addUser(@Valid @RequestBody UserDto userDto) {
+        return UserMapper.toUserDto(userService.addUser(UserMapper.toUser(userDto)));
     }
 
     @GetMapping("/{userId}")
-    public User getUserById(@PathVariable long userId) {
-        return userService.getUserById(userId);
+    public UserDto getUserById(@PathVariable long userId) {
+        return UserMapper.toUserDto(userService.getUserById(userId));
     }
 
     @PatchMapping("/{userId}")
-    public User updateUser(@RequestBody User user,
-                           @PathVariable long userId) {
-        user.setId(userId);
-        return userService.updateUser(user);
+    @Validated(OnUpdate.class)
+    public UserDto updateUser(@Valid @RequestBody UserDto userDto,
+                              @PathVariable long userId) {
+        userDto.setId(userId);
+        return UserMapper.toUserDto(userService.updateUser(UserMapper.toUser(userDto)));
     }
 
     @DeleteMapping("/{userId}")
@@ -47,7 +50,9 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    public List<UserDto> getAllUsers() {
+        return userService.getAllUsers().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 }

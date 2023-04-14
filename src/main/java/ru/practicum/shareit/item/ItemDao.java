@@ -3,12 +3,13 @@ package ru.practicum.shareit.item;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemDao {
 
     Item addItem(Item item, long userId);
 
-    Item getItemById(long itemId);
+    Optional<Item> getItemById(long itemId);
 
     Item updateItem(Item item, long userId, long itemId);
 

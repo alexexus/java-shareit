@@ -3,6 +3,7 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DuplicateException;
+import ru.practicum.shareit.exception.NotFoundException;
 
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +19,8 @@ public class UserService {
     }
 
     public User getUserById(long id) {
-        return userDao.getUserById(id);
+        return userDao.getUserById(id)
+                .orElseThrow(() -> new NotFoundException("User not found"));
     }
 
     public User updateUser(User user) {

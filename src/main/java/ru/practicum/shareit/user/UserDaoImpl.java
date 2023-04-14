@@ -1,12 +1,12 @@
 package ru.practicum.shareit.user;
 
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exception.NotFoundException;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
 public class UserDaoImpl implements UserDao {
@@ -23,23 +23,20 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public User getUserById(long id) {
-        if (!users.containsKey(id)) {
-            throw new NotFoundException("User not exist");
-        }
-        return users.get(id);
+    public Optional<User> getUserById(long id) {
+        return Optional.ofNullable(users.get(id));
     }
 
     @Override
     public User updateUser(User user) {
-        if (user.getEmail() == null) {
-            user.setEmail(users.get(user.getId()).getEmail());
+        User oldUser = users.get(user.getId());
+        if (user.getEmail() != null && !user.getEmail().isBlank()) {
+            oldUser.setEmail(user.getEmail());
         }
-        if (user.getName() == null) {
-            user.setName(users.get(user.getId()).getName());
+        if (user.getName() != null && !user.getName().isBlank()) {
+            oldUser.setName(user.getName());
         }
-        users.put(user.getId(), user);
-        return users.get(user.getId());
+        return oldUser;
     }
 
     @Override

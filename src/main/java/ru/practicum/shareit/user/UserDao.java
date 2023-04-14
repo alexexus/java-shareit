@@ -1,12 +1,13 @@
 package ru.practicum.shareit.user;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserDao {
 
     User addUser(User user);
 
-    User getUserById(long id);
+    Optional<User> getUserById(long id);
 
     User updateUser(User user);
 

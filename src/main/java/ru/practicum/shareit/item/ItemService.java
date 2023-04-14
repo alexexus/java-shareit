@@ -17,16 +17,16 @@ public class ItemService {
     private final UserDao userDao;
 
     public Item addItem(Item item, long userId) {
-        userDao.getUserById(userId);
+        userDao.getUserById(userId).orElseThrow(() -> new NotFoundException("User not found"));
         return itemDao.addItem(item, userId);
     }
 
     public Item getItemById(long itemId) {
-        return itemDao.getItemById(itemId);
+        return itemDao.getItemById(itemId).orElseThrow(() -> new NotFoundException("Item not found"));
     }
 
     public Item updateItem(Item item, long userId, long itemId) {
-        if (itemDao.getItemById(itemId).getOwner() != userId) {
+        if (getItemById(itemId).getOwner() != userId) {
             throw new NotFoundException("User not exist");
         }
         return itemDao.updateItem(item, userId, itemId);
