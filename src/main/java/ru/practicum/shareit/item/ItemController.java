@@ -13,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import ru.practicum.shareit.OnCreate;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
+import ru.practicum.shareit.item.dto.ItemDtoWithComments;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,9 +35,9 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
-                               @PathVariable long itemId) {
-        return ItemMapper.toItemDto(itemService.getItemById(itemId));
+    public ItemDtoWithComments getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+                                           @PathVariable long itemId) {
+        return itemService.getItemById(itemId, userId);
     }
 
     @PatchMapping("/{itemId}")
@@ -59,9 +62,14 @@ public class ItemController {
     }
 
     @GetMapping
-    public List<ItemDto> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getAllItemsByUserId(userId).stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
+    public List<ItemDtoWithBookings> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemService.getAllItemsByUserId(userId);
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                 @PathVariable long itemId,
+                                 @RequestBody Comment comment) {
+        return CommentMapper.toCommentDto(itemService.addComment(comment, userId, itemId));
     }
 }
