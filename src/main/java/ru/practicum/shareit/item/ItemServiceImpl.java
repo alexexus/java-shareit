@@ -27,6 +27,8 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
+    private final ItemMapper itemMapper;
+    private final BookingMapper bookingMapper;
 
     public Item addItem(Item item, long userId) {
         userRepository.findById(userId)
@@ -39,15 +41,15 @@ public class ItemServiceImpl implements ItemService {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
         ItemDtoWithComments itemDtoWithComments = ItemMapper.toItemDtoWithComments(item);
-        itemDtoWithComments.setComments(commentRepository.findAllByItem_Id(itemId).stream()
+        itemDtoWithComments.setComments(commentRepository.findByItemId(itemId).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList()));
-        List<Booking> bookings = bookingRepository.findAllByItem_Id(itemId);
+        List<Booking> bookings = bookingRepository.findByItemId(itemId);
         if (bookings.isEmpty() || itemDtoWithComments.getOwner() != userId) {
             return itemDtoWithComments;
         }
-        itemDtoWithComments.setLastBooking(BookingMapper.toBookingDtoItem(getLastBooking(bookings)));
-        itemDtoWithComments.setNextBooking(BookingMapper.toBookingDtoItem(getNextBooking(bookings)));
+        itemDtoWithComments.setLastBooking(bookingMapper.toBookingDtoItem(getLastBooking(bookings)));
+        itemDtoWithComments.setNextBooking(bookingMapper.toBookingDtoItem(getNextBooking(bookings)));
         return itemDtoWithComments;
     }
 
@@ -82,22 +84,22 @@ public class ItemServiceImpl implements ItemService {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.findAllByText(text);
+        return itemRepository.findByText(text);
     }
 
     public List<ItemDtoWithBookings> getAllItemsByUserId(long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        List<ItemDtoWithBookings> items = itemRepository.findAllByOwner(userId).stream()
-                .map(ItemMapper::toItemDtoWithBookings)
+        List<ItemDtoWithBookings> items = itemRepository.findByOwner(userId).stream()
+                .map(itemMapper::toItemDtoWithBookings)
                 .collect(Collectors.toList());
         for (ItemDtoWithBookings i : items) {
-            List<Booking> bookings = bookingRepository.findAllByItem_Id(i.getId());
+            List<Booking> bookings = bookingRepository.findByItemId(i.getId());
             if (bookings.isEmpty() || i.getOwner() != userId) {
                 continue;
             }
-            i.setLastBooking(BookingMapper.toBookingDtoItem(getLastBooking(bookings)));
-            i.setNextBooking(BookingMapper.toBookingDtoItem(getNextBooking(bookings)));
+            i.setLastBooking(bookingMapper.toBookingDtoItem(getLastBooking(bookings)));
+            i.setNextBooking(bookingMapper.toBookingDtoItem(getNextBooking(bookings)));
         }
         return items;
     }
@@ -106,7 +108,7 @@ public class ItemServiceImpl implements ItemService {
         if (comment.getText().isBlank()) {
             throw new ValidationException("Text is empty");
         }
-        List<Long> bookings = bookingRepository.findAllByItem_IdAndEndIsBefore(itemId, LocalDateTime.now()).stream()
+        List<Long> bookings = bookingRepository.findByItemIdAndEndIsBefore(itemId, LocalDateTime.now()).stream()
                 .map(booking -> booking.getBooker().getId())
                 .collect(Collectors.toList());
         if (!bookings.contains(userId)) {

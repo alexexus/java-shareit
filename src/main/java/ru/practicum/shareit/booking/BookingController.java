@@ -22,80 +22,48 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BookingController {
 
+    public static final String USER_ID = "X-Sharer-User-Id";
     private final BookingServiceImpl bookingServiceImpl;
+    private final BookingMapper bookingMapper;
 
     @PostMapping
-    public Booking addBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Booking addBooking(@RequestHeader(USER_ID) long userId,
                               @Validated(OnCreate.class) @RequestBody BookingDto bookingDto) {
-        return bookingServiceImpl.addBooking(BookingMapper.toBooking(bookingDto), userId);
+        return bookingServiceImpl.addBooking(bookingMapper.toBooking(bookingDto), userId);
     }
 
     @GetMapping("/{bookingId}")
-    public Booking getBookingById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Booking getBookingById(@RequestHeader(USER_ID) long userId,
                                   @PathVariable long bookingId) {
         return bookingServiceImpl.getBookingById(bookingId, userId);
     }
 
     @PatchMapping("/{bookingId}")
-    public Booking updateBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Booking updateBooking(@RequestHeader(USER_ID) long userId,
                                  @PathVariable long bookingId,
                                  @RequestParam(name = "approved") boolean approved) {
         return bookingServiceImpl.updateBooking(userId, bookingId, approved);
     }
 
     @DeleteMapping("/{bookingId}")
-    public void deleteBooking(@RequestHeader("X-Sharer-User-Id") long userId,
+    public void deleteBooking(@RequestHeader(USER_ID) long userId,
                               @PathVariable long bookingId) {
         bookingServiceImpl.deleteBooking(bookingId, userId);
     }
 
     @GetMapping
-    public List<Booking> getAllBookingsByUserId(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<Booking> getAllBookingsByUserId(@RequestHeader(USER_ID) long userId,
                                                 @RequestParam(name = "state",
                                                         required = false,
                                                         defaultValue = "ALL") String state) {
-        try {
-            StateConstant constant = StateConstant.valueOf(state);
-            switch (constant) {
-                case ALL:
-                    return bookingServiceImpl.getAllBookingsByBookerId(userId);
-                case PAST:
-                    return bookingServiceImpl.getAllBookingsByBookerIdAndPast(userId);
-                case FUTURE:
-                    return bookingServiceImpl.getAllBookingsByBookerIdAndFuture(userId);
-                case WAITING:
-                case REJECTED:
-                case CURRENT:
-                    return bookingServiceImpl.getAllBookingsByBookerIdAndState(userId, constant);
-            }
-            return bookingServiceImpl.getAllBookingsByBookerId(userId);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown state: " + state);
-        }
+        return bookingServiceImpl.getAllBookingsByBookerIdAndState(userId, state);
     }
 
     @GetMapping("/owner")
-    public List<Booking> getAllBookingsByState(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<Booking> getAllBookingsByState(@RequestHeader(USER_ID) long userId,
                                                @RequestParam(name = "state",
                                                        required = false,
                                                        defaultValue = "ALL") String state) {
-        try {
-            StateConstant constant = StateConstant.valueOf(state);
-            switch (constant) {
-                case ALL:
-                    return bookingServiceImpl.getAllBookingsByOwnerId(userId);
-                case PAST:
-                    return bookingServiceImpl.getAllBookingsByOwnerIdAndPast(userId);
-                case FUTURE:
-                    return bookingServiceImpl.getAllBookingsByOwnerIdAndFuture(userId);
-                case WAITING:
-                case REJECTED:
-                case CURRENT:
-                    return bookingServiceImpl.getAllBookingsByOwnerIdAndState(userId, constant);
-            }
-            return bookingServiceImpl.getAllBookingsByOwnerId(userId);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown state: " + state);
-        }
+        return bookingServiceImpl.getAllBookingsByOwnerIdAndState(userId, state);
     }
 }

@@ -68,63 +68,62 @@ public class BookingServiceImpl implements BookingService {
         bookingRepository.deleteById(bookingId);
     }
 
-    public List<Booking> getAllBookingsByBookerId(long userId) {
+    public List<Booking> getAllBookingsByBookerIdAndState(long userId, String state) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        return bookingRepository.findAllByBooker_IdOrderByStartDesc(userId);
-    }
-
-    public List<Booking> getAllBookingsByBookerIdAndState(long userId, StateConstant state) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        if (state == StateConstant.CURRENT) {
-            return bookingRepository.findAllByBooker_IdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                    userId,
-                    LocalDateTime.now(),
-                    LocalDateTime.now());
+        try {
+            StateConstant constant = StateConstant.valueOf(state);
+            switch (constant) {
+                case ALL:
+                    return bookingRepository.findByBookerIdOrderByStartDesc(userId);
+                case PAST:
+                    return bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
+                            LocalDateTime.now());
+                case FUTURE:
+                    return bookingRepository.findByBookerIdAndEndIsAfterOrderByStartDesc(userId,
+                            LocalDateTime.now());
+                case CURRENT:
+                    return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                            LocalDateTime.now(),
+                            LocalDateTime.now());
+                case WAITING:
+                case REJECTED:
+                    return bookingRepository.findByBookerIdAndState(userId,
+                            BookingConstant.valueOf(constant.toString()));
+            }
+            return bookingRepository.findByBookerIdOrderByStartDesc(userId);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown state: " + state);
         }
-        return bookingRepository.findAllByBookerIdAndState(userId, BookingConstant.valueOf(state.toString()));
     }
 
-    public List<Booking> getAllBookingsByBookerIdAndPast(long userId) {
+    public List<Booking> getAllBookingsByOwnerIdAndState(long userId, String state) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        return bookingRepository.findAllByBooker_IdAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());
-    }
-
-    public List<Booking> getAllBookingsByBookerIdAndFuture(long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return bookingRepository.findAllByBooker_IdAndEndIsAfterOrderByStartDesc(userId, LocalDateTime.now());
-    }
-
-    public List<Booking> getAllBookingsByOwnerId(long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return bookingRepository.findAllByItem_OwnerOrderByStartDesc(userId);
-    }
-
-    public List<Booking> getAllBookingsByOwnerIdAndState(long userId, StateConstant state) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        if (state == StateConstant.CURRENT) {
-            return bookingRepository.findAllByItem_OwnerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                    userId,
-                    LocalDateTime.now(),
-                    LocalDateTime.now());
+        try {
+            StateConstant constant = StateConstant.valueOf(state);
+            switch (constant) {
+                case ALL:
+                    return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
+                case PAST:
+                    return bookingRepository.findByItemOwnerAndEndIsBeforeOrderByStartDesc(userId,
+                            LocalDateTime.now());
+                case FUTURE:
+                    return bookingRepository.findByItemOwnerAndEndIsAfterOrderByStartDesc(userId,
+                            LocalDateTime.now());
+                case CURRENT:
+                    return bookingRepository.findByItemOwnerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                            userId,
+                            LocalDateTime.now(),
+                            LocalDateTime.now());
+                case WAITING:
+                case REJECTED:
+                    return bookingRepository.findByItemOwnerAndState(userId,
+                            BookingConstant.valueOf(constant.toString()));
+            }
+            return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown state: " + state);
         }
-        return bookingRepository.findAllByItemOwnerAndState(userId, BookingConstant.valueOf(state.toString()));
-    }
-
-    public List<Booking> getAllBookingsByOwnerIdAndPast(long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return bookingRepository.findAllByItem_OwnerAndEndIsBeforeOrderByStartDesc(userId, LocalDateTime.now());
-    }
-
-    public List<Booking> getAllBookingsByOwnerIdAndFuture(long userId) {
-        userRepository.findById(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
-        return bookingRepository.findAllByItem_OwnerAndEndIsAfterOrderByStartDesc(userId, LocalDateTime.now());
     }
 }

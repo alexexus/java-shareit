@@ -1,14 +1,14 @@
 package ru.practicum.shareit.booking;
 
-import lombok.experimental.UtilityClass;
+import org.springframework.stereotype.Component;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.Item;
 
-@UtilityClass
+@Component
 public class BookingMapper {
 
-    public static Booking toBooking(BookingDto bookingDto) {
+    public Booking toBooking(BookingDto bookingDto) {
         Item item = new Item();
         item.setId(bookingDto.getItemId());
         return new Booking(bookingDto.getId(),
@@ -19,7 +19,7 @@ public class BookingMapper {
                 bookingDto.getStatus());
     }
 
-    public static BookingDtoItem toBookingDtoItem(Booking booking) {
+    public BookingDtoItem toBookingDtoItem(Booking booking) {
         if (booking == null) {
             return null;
         }

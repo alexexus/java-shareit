@@ -22,22 +22,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class UserController {
     private final UserServiceImpl userServiceImpl;
+    private final UserMapper userMapper;
 
     @PostMapping
     public UserDto addUser(@Validated(OnCreate.class) @RequestBody UserDto userDto) {
-        return UserMapper.toUserDto(userServiceImpl.addUser(UserMapper.toUser(userDto)));
+        return userMapper.toUserDto(userServiceImpl.addUser(userMapper.toUser(userDto)));
     }
 
     @GetMapping("/{userId}")
     public UserDto getUserById(@PathVariable long userId) {
-        return UserMapper.toUserDto(userServiceImpl.getUserById(userId));
+        return userMapper.toUserDto(userServiceImpl.getUserById(userId));
     }
 
     @PatchMapping("/{userId}")
     public UserDto updateUser(@Validated(OnUpdate.class) @RequestBody UserDto userDto,
                               @PathVariable long userId) {
         userDto.setId(userId);
-        return UserMapper.toUserDto(userServiceImpl.updateUser(UserMapper.toUser(userDto)));
+        return userMapper.toUserDto(userServiceImpl.updateUser(userMapper.toUser(userDto)));
     }
 
     @DeleteMapping("/{userId}")
@@ -48,7 +49,7 @@ public class UserController {
     @GetMapping
     public List<UserDto> getAllUsers() {
         return userServiceImpl.getAllUsers().stream()
-                .map(UserMapper::toUserDto)
+                .map(userMapper::toUserDto)
                 .collect(Collectors.toList());
     }
 }

@@ -12,19 +12,7 @@ public interface BookingService {
 
     void deleteBooking(long bookingId, long userId);
 
-    List<Booking> getAllBookingsByBookerIdAndState(long userId, StateConstant state);
+    List<Booking> getAllBookingsByBookerIdAndState(long userId, String state);
 
-    List<Booking> getAllBookingsByBookerId(long userId);
-
-    List<Booking> getAllBookingsByBookerIdAndPast(long userId);
-
-    List<Booking> getAllBookingsByBookerIdAndFuture(long userId);
-
-    List<Booking> getAllBookingsByOwnerId(long userId);
-
-    List<Booking> getAllBookingsByOwnerIdAndState(long userId, StateConstant state);
-
-    List<Booking> getAllBookingsByOwnerIdAndPast(long userId);
-
-    List<Booking> getAllBookingsByOwnerIdAndFuture(long userId);
+    List<Booking> getAllBookingsByOwnerIdAndState(long userId, String state);
 }

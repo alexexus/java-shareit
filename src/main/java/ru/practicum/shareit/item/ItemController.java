@@ -26,48 +26,50 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemController {
 
+    public static final String USER_ID = "X-Sharer-User-Id";
     private final ItemService itemService;
+    private final ItemMapper itemMapper;
 
     @PostMapping
-    public ItemDto addItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto addItem(@RequestHeader(USER_ID) long userId,
                            @Validated(OnCreate.class) @RequestBody ItemDto itemDto) {
-        return ItemMapper.toItemDto(itemService.addItem(ItemMapper.toItem(itemDto), userId));
+        return itemMapper.toItemDto(itemService.addItem(itemMapper.toItem(itemDto), userId));
     }
 
     @GetMapping("/{itemId}")
-    public ItemDtoWithComments getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDtoWithComments getItemById(@RequestHeader(USER_ID) long userId,
                                            @PathVariable long itemId) {
         return itemService.getItemById(itemId, userId);
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public ItemDto updateItem(@RequestHeader(USER_ID) long userId,
                               @RequestBody ItemDto itemDto,
                               @PathVariable long itemId) {
-        return ItemMapper.toItemDto(itemService.updateItem(ItemMapper.toItem(itemDto), userId, itemId));
+        return itemMapper.toItemDto(itemService.updateItem(itemMapper.toItem(itemDto), userId, itemId));
     }
 
     @DeleteMapping("/{itemId}")
-    public void deleteItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public void deleteItem(@RequestHeader(USER_ID) long userId,
                            @PathVariable long itemId) {
         itemService.deleteItem(itemId);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> getItemsByText(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<ItemDto> getItemsByText(@RequestHeader(USER_ID) long userId,
                                         @RequestParam String text) {
         return itemService.getItemsByText(text).stream()
-                .map(ItemMapper::toItemDto)
+                .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping
-    public List<ItemDtoWithBookings> getAllItemsByUserId(@RequestHeader("X-Sharer-User-Id") long userId) {
+    public List<ItemDtoWithBookings> getAllItemsByUserId(@RequestHeader(USER_ID) long userId) {
         return itemService.getAllItemsByUserId(userId);
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+    public CommentDto addComment(@RequestHeader(USER_ID) long userId,
                                  @PathVariable long itemId,
                                  @RequestBody Comment comment) {
         return CommentMapper.toCommentDto(itemService.addComment(comment, userId, itemId));
