@@ -3,21 +3,21 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.OnCreate;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Builder
 @AllArgsConstructor
-public class ItemDto {
+public class ItemDtoWithComments {
+
     private Long id;
-    @NotBlank(groups = {OnCreate.class})
     private String name;
-    @NotBlank(groups = {OnCreate.class})
     private String description;
-    @NotNull(groups = {OnCreate.class})
     private Boolean available;
     private Long owner;
+    private BookingDtoItem lastBooking;
+    private BookingDtoItem nextBooking;
+    private List<CommentDto> comments;
 }
