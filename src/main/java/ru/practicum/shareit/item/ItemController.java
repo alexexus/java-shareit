@@ -29,6 +29,7 @@ public class ItemController {
     public static final String USER_ID = "X-Sharer-User-Id";
     private final ItemService itemService;
     private final ItemMapper itemMapper;
+    private final CommentMapper commentMapper;
 
     @PostMapping
     public ItemDto addItem(@RequestHeader(USER_ID) long userId,
@@ -39,7 +40,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ItemDtoWithComments getItemById(@RequestHeader(USER_ID) long userId,
                                            @PathVariable long itemId) {
-        return itemService.getItemById(itemId, userId);
+        return itemMapper.toItemDtoWithComments(itemService.getItemById(itemId, userId));
     }
 
     @PatchMapping("/{itemId}")
@@ -65,13 +66,15 @@ public class ItemController {
 
     @GetMapping
     public List<ItemDtoWithBookings> getAllItemsByUserId(@RequestHeader(USER_ID) long userId) {
-        return itemService.getAllItemsByUserId(userId);
+        return itemService.getAllItemsByUserId(userId).stream()
+                .map(itemMapper::toItemDtoWithBookings)
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/{itemId}/comment")
     public CommentDto addComment(@RequestHeader(USER_ID) long userId,
                                  @PathVariable long itemId,
                                  @RequestBody Comment comment) {
-        return CommentMapper.toCommentDto(itemService.addComment(comment, userId, itemId));
+        return commentMapper.toCommentDto(itemService.addComment(comment, userId, itemId));
     }
 }

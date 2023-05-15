@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import ru.practicum.shareit.OnCreate;
 import ru.practicum.shareit.booking.BookingConstant;
@@ -12,6 +13,7 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 @Data
+@Builder
 @AllArgsConstructor
 public class BookingDto {
 

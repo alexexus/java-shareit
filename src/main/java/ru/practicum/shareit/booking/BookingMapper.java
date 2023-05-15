@@ -11,19 +11,23 @@ public class BookingMapper {
     public Booking toBooking(BookingDto bookingDto) {
         Item item = new Item();
         item.setId(bookingDto.getItemId());
-        return new Booking(bookingDto.getId(),
-                bookingDto.getStart(),
-                bookingDto.getEnd(),
-                item,
-                bookingDto.getBooker(),
-                bookingDto.getStatus());
+        return Booking.builder()
+                .id(bookingDto.getId())
+                .start(bookingDto.getStart())
+                .end(bookingDto.getEnd())
+                .item(item)
+                .booker(bookingDto.getBooker())
+                .status(bookingDto.getStatus())
+                .build();
     }
 
     public BookingDtoItem toBookingDtoItem(Booking booking) {
         if (booking == null) {
             return null;
         }
-        return new BookingDtoItem(booking.getId(),
-                booking.getBooker().getId());
+        return BookingDtoItem.builder()
+                .id(booking.getId())
+                .bookerId(booking.getBooker().getId())
+                .build();
     }
 }

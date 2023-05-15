@@ -1,8 +1,11 @@
 package ru.practicum.shareit.item;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.practicum.shareit.booking.dto.BookingDtoItem;
+import ru.practicum.shareit.item.dto.CommentDto;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,12 +13,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.util.Collections;
+import java.util.List;
 
 @Data
+@Entity
+@Builder
+@Table(name = "items")
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "items")
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,4 +40,13 @@ public class Item {
 
     @Column(name = "owner_id")
     private Long owner;
+
+    @Transient
+    private BookingDtoItem lastBooking;
+
+    @Transient
+    private BookingDtoItem nextBooking;
+
+    @Transient
+    private List<CommentDto> comments = Collections.emptyList();
 }

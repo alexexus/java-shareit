@@ -72,8 +72,8 @@ public class BookingServiceImpl implements BookingService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         try {
-            StateConstant constant = StateConstant.valueOf(state);
-            switch (constant) {
+            BookingState bookingState = BookingState.valueOf(state);
+            switch (bookingState) {
                 case ALL:
                     return bookingRepository.findByBookerIdOrderByStartDesc(userId);
                 case PAST:
@@ -89,7 +89,7 @@ public class BookingServiceImpl implements BookingService {
                 case WAITING:
                 case REJECTED:
                     return bookingRepository.findByBookerIdAndState(userId,
-                            BookingConstant.valueOf(constant.toString()));
+                            BookingConstant.valueOf(bookingState.toString()));
             }
             return bookingRepository.findByBookerIdOrderByStartDesc(userId);
         } catch (IllegalArgumentException e) {
@@ -101,8 +101,8 @@ public class BookingServiceImpl implements BookingService {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         try {
-            StateConstant constant = StateConstant.valueOf(state);
-            switch (constant) {
+            BookingState bookingState = BookingState.valueOf(state);
+            switch (bookingState) {
                 case ALL:
                     return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
                 case PAST:
@@ -119,7 +119,7 @@ public class BookingServiceImpl implements BookingService {
                 case WAITING:
                 case REJECTED:
                     return bookingRepository.findByItemOwnerAndState(userId,
-                            BookingConstant.valueOf(constant.toString()));
+                            BookingConstant.valueOf(bookingState.toString()));
             }
             return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
         } catch (IllegalArgumentException e) {

@@ -5,52 +5,50 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.dto.ItemDtoWithComments;
 
-import java.util.Collections;
-
 @Component
 public class ItemMapper {
     public ItemDto toItemDto(Item item) {
-        return new ItemDto(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getOwner()
-        );
+        return ItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .owner(item.getOwner())
+                .build();
     }
 
     public Item toItem(ItemDto itemDto) {
-        return new Item(
-                itemDto.getId(),
-                itemDto.getName(),
-                itemDto.getDescription(),
-                itemDto.getAvailable(),
-                itemDto.getOwner()
-        );
+        return Item.builder()
+                .id(itemDto.getId())
+                .name(itemDto.getName())
+                .description(itemDto.getDescription())
+                .available(itemDto.getAvailable())
+                .owner(itemDto.getOwner())
+                .build();
     }
 
     public ItemDtoWithBookings toItemDtoWithBookings(Item item) {
-        return new ItemDtoWithBookings(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getOwner(),
-                null,
-                null
-        );
+        return ItemDtoWithBookings.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .owner(item.getOwner())
+                .lastBooking(item.getLastBooking())
+                .nextBooking(item.getNextBooking())
+                .build();
     }
 
-    public static ItemDtoWithComments toItemDtoWithComments(Item item) {
-        return new ItemDtoWithComments(
-                item.getId(),
-                item.getName(),
-                item.getDescription(),
-                item.getAvailable(),
-                item.getOwner(),
-                null,
-                null,
-                Collections.emptyList()
-        );
+    public ItemDtoWithComments toItemDtoWithComments(Item item) {
+        return ItemDtoWithComments.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.getAvailable())
+                .owner(item.getOwner())
+                .lastBooking(item.getLastBooking())
+                .nextBooking(item.getNextBooking())
+                .comments(item.getComments())
+                .build();
     }
 }

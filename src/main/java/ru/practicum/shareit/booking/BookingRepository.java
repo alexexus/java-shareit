@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
 
-    @Query("select b from Booking as b where b.booker.id = ?1 and b.status = ?2 order by b.start desc")
+    @Query("select b from Booking as b where b.booker.id = :userId and b.status = :state order by b.start desc")
     List<Booking> findByBookerIdAndState(long userId, BookingConstant state);
 
     List<Booking> findByBookerIdOrderByStartDesc(long userId);
@@ -19,7 +19,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     List<Booking> findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(Long bookerId, LocalDateTime start, LocalDateTime end);
 
-    @Query("select b from Booking as b where b.item.owner = ?1 and b.status = ?2 order by b.start desc")
+    @Query("select b from Booking as b where b.item.owner = :userId and b.status = :state order by b.start desc")
     List<Booking> findByItemOwnerAndState(long userId, BookingConstant state);
 
     List<Booking> findByItemOwnerOrderByStartDesc(long userId);
