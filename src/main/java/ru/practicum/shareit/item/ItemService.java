@@ -1,8 +1,5 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
-import ru.practicum.shareit.item.dto.ItemDtoWithComments;
-
 import java.util.List;
 
 public interface ItemService {
