@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.doNothing;
@@ -81,10 +82,18 @@ class UserServiceImplTest {
     }
 
     @Test
+    void deleteUserTestNotFoundUser() {
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.deleteUser(1L));
+    }
+
+    @Test
     void updateUserTest() {
         User userToUpdate = User.builder().id(1L).name("name1").email("1@mail.com").build();
         User user = User.builder().id(1L).name("name1update").email("1@mail.com").build();
-        when(repository.findById(anyLong())).thenReturn(Optional.ofNullable(userToUpdate));
+        when(repository.findById(anyLong())).thenReturn(Optional.of(userToUpdate));
         when(repository.save(any(User.class))).thenReturn(user);
 
         User actual = service.updateUser(user);
@@ -92,5 +101,14 @@ class UserServiceImplTest {
         assertThat(actual).usingRecursiveComparison().isEqualTo(user);
         verify(repository, times(1)).save(any(User.class));
         verifyNoMoreInteractions(repository);
+    }
+
+    @Test
+    void updateUserTestNotFoundUser() {
+        User user = User.builder().id(1L).name("name1update").email("1@mail.com").build();
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.updateUser(user));
     }
 }

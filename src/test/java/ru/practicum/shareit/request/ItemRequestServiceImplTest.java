@@ -7,6 +7,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
+import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
@@ -17,6 +18,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.times;
@@ -56,6 +58,21 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
+    void addItemRequestNotFoundUser() {
+        User user = User.builder().id(1L).build();
+        ItemRequest itemRequest = ItemRequest.builder()
+                .id(1L)
+                .description("description")
+                .requestor(user)
+                .created(LocalDateTime.now())
+                .build();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.addItemRequest(itemRequest, 1L));
+    }
+
+    @Test
     void getItemRequestById() {
         User user = User.builder().id(1L).build();
         ItemRequest itemRequest = ItemRequest.builder()
@@ -76,6 +93,24 @@ class ItemRequestServiceImplTest {
     }
 
     @Test
+    void getItemRequestByIdNotFoundUser() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.getItemRequestById(1L, 1L));
+    }
+
+    @Test
+    void getItemRequestByIdNotFoundItemRequest() {
+        User user = User.builder().id(1L).build();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.getItemRequestById(1L, 1L));
+    }
+
+    @Test
     void getAllItemRequestsPageable() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
         when(itemRequestRepository.findByRequestorIdNotOrderByCreatedDesc(anyLong(), any(PageRequest.class)))
@@ -86,6 +121,14 @@ class ItemRequestServiceImplTest {
         verify(itemRequestRepository, times(1))
                 .findByRequestorIdNotOrderByCreatedDesc(anyLong(), any(PageRequest.class));
         verifyNoMoreInteractions(itemRequestRepository);
+    }
+
+    @Test
+    void getAllItemRequestsPageableNotFoundUser() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.getAllItemRequestsPageable(1L, 0, 20));
     }
 
     @Test
@@ -116,5 +159,13 @@ class ItemRequestServiceImplTest {
 
         verify(itemRequestRepository, times(1)).findByRequestorId(anyLong());
         verifyNoMoreInteractions(itemRequestRepository);
+    }
+
+    @Test
+    void getAllItemRequestsNotFoundUser() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.getAllItemRequests(1L));
     }
 }

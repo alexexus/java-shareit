@@ -1,8 +1,9 @@
 package ru.practicum.shareit.item;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.user.User;
 
@@ -11,10 +12,10 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class CommentMapperTest {
 
-    @Autowired
+    @InjectMocks
     private CommentMapper commentMapper;
 
     @Test

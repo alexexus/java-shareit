@@ -1,8 +1,9 @@
 package ru.practicum.shareit.booking;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.Item;
@@ -14,10 +15,10 @@ import java.util.Collections;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class BookingMapperTest {
 
-    @Autowired
+    @InjectMocks
     private BookingMapper bookingMapper;
 
     @Test

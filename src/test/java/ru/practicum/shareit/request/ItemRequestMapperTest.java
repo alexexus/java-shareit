@@ -1,8 +1,9 @@
 package ru.practicum.shareit.request;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 
@@ -11,10 +12,10 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class ItemRequestMapperTest {
 
-    @Autowired
+    @InjectMocks
     private ItemRequestMapper itemRequestMapper;
 
     @Test

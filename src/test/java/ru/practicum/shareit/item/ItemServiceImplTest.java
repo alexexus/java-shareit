@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -74,6 +74,37 @@ class ItemServiceImplTest {
     }
 
     @Test
+    void addItemNotFoundUser() {
+        Item itemToSave = Item.builder()
+                .id(1L)
+                .name("name1")
+                .description("description1")
+                .available(true)
+                .requestId(1L)
+                .build();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.addItem(itemToSave, 1L));
+    }
+
+    @Test
+    void addItemNotFoundItemRequest() {
+        Item itemToSave = Item.builder()
+                .id(1L)
+                .name("name1")
+                .description("description1")
+                .available(true)
+                .requestId(1L)
+                .build();
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
+        when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.addItem(itemToSave, 1L));
+    }
+
+    @Test
     void getItemById() {
         Item expectedItem = Item.builder()
                 .id(1L)
@@ -104,6 +135,14 @@ class ItemServiceImplTest {
         assertThat(actual).usingRecursiveComparison().isEqualTo(expectedItem);
         verify(itemRepository, times(1)).findById(anyLong());
         verifyNoMoreInteractions(itemRepository);
+    }
+
+    @Test
+    void getItemByIdNotFoundItem() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.getItemById(1L, 2L));
     }
 
     @Test
@@ -156,11 +195,40 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void updateItemNotFound() {
-        Item itemToUpdate = Item.builder().owner(1L).build();
+    void updateItemWithNullableFields() {
+        Item itemToUpdate = Item.builder()
+                .id(1L)
+                .name("name1")
+                .description("description1")
+                .available(true)
+                .owner(1L)
+                .requestId(1L)
+                .build();
+        Item item = Item.builder()
+                .id(1L)
+                .name(null)
+                .description(null)
+                .available(null)
+                .owner(null)
+                .requestId(1L)
+                .build();
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(itemToUpdate));
+        when(itemRepository.save(any(Item.class))).thenReturn(item);
 
-        Assertions.assertThrows(NotFoundException.class, () -> service.updateItem(itemToUpdate, 2L, 1L));
+        Item actual = service.updateItem(item, 1L, 1L);
+
+        assertThat(actual).usingRecursiveComparison().isEqualTo(item);
+        verify(itemRepository, times(1)).save(any(Item.class));
+        verifyNoMoreInteractions(itemRepository);
+    }
+
+    @Test
+    void updateItemNotFoundItem() {
+        Item itemToUpdate = Item.builder().owner(1L).build();
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.updateItem(itemToUpdate, 2L, 1L));
     }
 
     @Test
@@ -172,6 +240,14 @@ class ItemServiceImplTest {
 
         verify(itemRepository, times(1)).deleteById(anyLong());
         verifyNoMoreInteractions(itemRepository);
+    }
+
+    @Test
+    void deleteItemNotFoundItem() {
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.deleteItem(1L));
     }
 
     @Test
@@ -190,7 +266,7 @@ class ItemServiceImplTest {
 
     @Test
     void getItemsByTextNotValid() {
-        Assertions.assertThrows(ValidationException.class,
+        assertThrows(ValidationException.class,
                 () -> service.getItemsByText("text", -1, 20));
     }
 
@@ -259,8 +335,16 @@ class ItemServiceImplTest {
     void getAllItemsByUserIdNotValid() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
 
-        Assertions.assertThrows(ValidationException.class,
+        assertThrows(ValidationException.class,
                 () -> service.getAllItemsByUserId(1L, -1, 20));
+    }
+
+    @Test
+    void getAllItemsByUserIdNotFoundUser() {
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.getAllItemsByUserId(1L, 0, 20));
     }
 
     @Test
@@ -300,7 +384,7 @@ class ItemServiceImplTest {
                 .created(LocalDateTime.now())
                 .build();
 
-        Assertions.assertThrows(ValidationException.class,
+        assertThrows(ValidationException.class,
                 () -> service.addComment(commentToSave, 1L, 1L));
         verifyNoMoreInteractions(commentRepository);
     }
@@ -321,7 +405,50 @@ class ItemServiceImplTest {
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(List.of(booking));
 
-        Assertions.assertThrows(ValidationException.class,
+        assertThrows(ValidationException.class,
+                () -> service.addComment(commentToSave, 1L, 1L));
+        verifyNoMoreInteractions(commentRepository);
+    }
+
+    @Test
+    void addCommentNotFoundUser() {
+        Item item = Item.builder().id(1L).build();
+        User user = User.builder().id(1L).build();
+        Comment commentToSave = Comment.builder()
+                .id(1L)
+                .text("text")
+                .item(item)
+                .author(user)
+                .created(LocalDateTime.now())
+                .build();
+        Booking booking = Booking.builder().booker(user).build();
+        when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
+                .thenReturn(List.of(booking));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
+                () -> service.addComment(commentToSave, 1L, 1L));
+        verifyNoMoreInteractions(commentRepository);
+    }
+
+    @Test
+    void addCommentNotFoundItem() {
+        Item item = Item.builder().id(1L).build();
+        User user = User.builder().id(1L).build();
+        Comment commentToSave = Comment.builder()
+                .id(1L)
+                .text("text")
+                .item(item)
+                .author(user)
+                .created(LocalDateTime.now())
+                .build();
+        Booking booking = Booking.builder().booker(user).build();
+        when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
+                .thenReturn(List.of(booking));
+        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
+        when(itemRepository.findById(anyLong())).thenReturn(Optional.empty());
+
+        assertThrows(NotFoundException.class,
                 () -> service.addComment(commentToSave, 1L, 1L));
         verifyNoMoreInteractions(commentRepository);
     }

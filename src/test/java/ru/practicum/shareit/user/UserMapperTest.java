@@ -1,16 +1,17 @@
 package ru.practicum.shareit.user;
 
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.user.dto.UserDto;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
+@ExtendWith(MockitoExtension.class)
 class UserMapperTest {
 
-    @Autowired
+    @InjectMocks
     private UserMapper userMapper;
 
     @Test
