@@ -58,15 +58,23 @@ public class ItemController {
 
     @GetMapping("/search")
     public List<ItemDto> getItemsByText(@RequestHeader(USER_ID) long userId,
-                                        @RequestParam String text) {
-        return itemService.getItemsByText(text).stream()
+                                        @RequestParam String text,
+                                        @RequestParam(name = "from",
+                                                required = false) Integer from,
+                                        @RequestParam(name = "size",
+                                                required = false) Integer size) {
+        return itemService.getItemsByText(text, from, size).stream()
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
 
     @GetMapping
-    public List<ItemDtoWithBookings> getAllItemsByUserId(@RequestHeader(USER_ID) long userId) {
-        return itemService.getAllItemsByUserId(userId).stream()
+    public List<ItemDtoWithBookings> getAllItemsByUserId(@RequestHeader(USER_ID) long userId,
+                                                         @RequestParam(name = "from",
+                                                                 required = false) Integer from,
+                                                         @RequestParam(name = "size",
+                                                                 required = false) Integer size) {
+        return itemService.getAllItemsByUserId(userId, from, size).stream()
                 .map(itemMapper::toItemDtoWithBookings)
                 .collect(Collectors.toList());
     }

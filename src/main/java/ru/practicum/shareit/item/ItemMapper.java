@@ -8,6 +8,16 @@ import ru.practicum.shareit.item.dto.ItemDtoWithComments;
 @Component
 public class ItemMapper {
     public ItemDto toItemDto(Item item) {
+        if (item.getRequestId() != null) {
+            return ItemDto.builder()
+                    .id(item.getId())
+                    .name(item.getName())
+                    .description(item.getDescription())
+                    .available(item.getAvailable())
+                    .owner(item.getOwner())
+                    .requestId(item.getRequestId())
+                    .build();
+        }
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
@@ -18,6 +28,16 @@ public class ItemMapper {
     }
 
     public Item toItem(ItemDto itemDto) {
+        if (itemDto.getRequestId() != null) {
+            return Item.builder()
+                    .id(itemDto.getId())
+                    .name(itemDto.getName())
+                    .description(itemDto.getDescription())
+                    .available(itemDto.getAvailable())
+                    .owner(itemDto.getOwner())
+                    .requestId(itemDto.getRequestId())
+                    .build();
+        }
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
