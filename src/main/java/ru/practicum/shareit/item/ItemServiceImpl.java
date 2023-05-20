@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingConstant;
@@ -8,6 +9,7 @@ import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.request.ItemRequestRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
@@ -25,17 +27,23 @@ public class ItemServiceImpl implements ItemService {
     private final UserRepository userRepository;
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
-    private final ItemMapper itemMapper;
+    private final ItemRequestRepository itemRequestRepository;
     private final BookingMapper bookingMapper;
     private final CommentMapper commentMapper;
 
+    @Override
     public Item addItem(Item item, long userId) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
         item.setOwner(userId);
+        if (item.getRequestId() != null) {
+            itemRequestRepository.findById(item.getRequestId())
+                    .orElseThrow(() -> new NotFoundException("Item request not found"));
+        }
         return itemRepository.save(item);
     }
 
+    @Override
     public Item getItemById(long itemId, long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
@@ -51,6 +59,7 @@ public class ItemServiceImpl implements ItemService {
         return item;
     }
 
+    @Override
     public Item updateItem(Item item, long userId, long itemId) {
         Item oldItem = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
@@ -72,34 +81,47 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.save(oldItem);
     }
 
+    @Override
     public void deleteItem(long itemId) {
         itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
         itemRepository.deleteById(itemId);
     }
 
-    public List<Item> getItemsByText(String text) {
+    @Override
+    public List<Item> getItemsByText(String text, Integer from, Integer size) {
         if (text.isBlank()) {
             return Collections.emptyList();
         }
-        return itemRepository.findByText(text);
+        if (from == null || size == null) {
+            return itemRepository.
+                    findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
+                            text, text);
+        }
+        if (size < 1 || from < 0) {
+            throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
+        }
+        return itemRepository.
+                findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
+                        text, text, PageRequest.of(from / size, size));
     }
 
-    public List<Item> getAllItemsByUserId(long userId) {
+    @Override
+    public List<Item> getAllItemsByUserId(long userId, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        List<Item> items = itemRepository.findByOwner(userId);
-        for (Item i : items) {
-            List<Booking> bookings = bookingRepository.findByItemId(i.getId());
-            if (bookings.isEmpty()) {
-                continue;
-            }
-            i.setLastBooking(bookingMapper.toBookingDtoItem(getLastBooking(bookings)));
-            i.setNextBooking(bookingMapper.toBookingDtoItem(getNextBooking(bookings)));
+        if (from == null || size == null) {
+            List<Item> items = itemRepository.findByOwner(userId);
+            return getItems(items);
         }
-        return items;
+        if (size < 1 || from < 0) {
+            throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
+        }
+        List<Item> items = itemRepository.findByOwner(userId, PageRequest.of(from / size, size));
+        return getItems(items);
     }
 
+    @Override
     public Comment addComment(Comment comment, long userId, long itemId) {
         if (comment.getText().isBlank()) {
             throw new ValidationException("Text is empty");
@@ -134,5 +156,17 @@ public class ItemServiceImpl implements ItemService {
                         b.getStatus().equals(BookingConstant.APPROVED))
                 .max(Comparator.comparing(Booking::getStart))
                 .orElse(null);
+    }
+
+    private List<Item> getItems(List<Item> items) {
+        for (Item i : items) {
+            List<Booking> bookings = bookingRepository.findByItemId(i.getId());
+            if (bookings.isEmpty()) {
+                continue;
+            }
+            i.setLastBooking(bookingMapper.toBookingDtoItem(getLastBooking(bookings)));
+            i.setNextBooking(bookingMapper.toBookingDtoItem(getNextBooking(bookings)));
+        }
+        return items;
     }
 }

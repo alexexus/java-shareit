@@ -49,4 +49,7 @@ public class Item {
 
     @Transient
     private List<CommentDto> comments = Collections.emptyList();
+
+    @Column(name = "request_id")
+    private Long requestId;
 }
