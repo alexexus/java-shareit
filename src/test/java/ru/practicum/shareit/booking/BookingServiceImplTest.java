@@ -292,9 +292,31 @@ class BookingServiceImplTest {
                 .thenReturn(Collections.emptyList());
 
         service.getAllBookingsByBookerIdAndState(1L, "ALL", 0, 20);
+        service.getAllBookingsByBookerIdAndState(1L, "PAST", 0, 20);
+        service.getAllBookingsByBookerIdAndState(1L, "FUTURE", 0, 20);
+        service.getAllBookingsByBookerIdAndState(1L, "CURRENT", 0, 20);
+        service.getAllBookingsByBookerIdAndState(1L, "WAITING", 0, 20);
+        service.getAllBookingsByBookerIdAndState(1L, "REJECTED", 0, 20);
 
         verify(bookingRepository, times(1))
                 .findByBookerIdOrderByStartDesc(anyLong(), any(PageRequest.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndEndIsBeforeOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(PageRequest.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(PageRequest.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(LocalDateTime.class),
+                        any(PageRequest.class));
+        verify(bookingRepository, times(2))
+                .findByBookerIdAndStatusIsOrderByStartDesc(anyLong(),
+                        any(BookingConstant.class),
+                        any(PageRequest.class));
         verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -305,9 +327,27 @@ class BookingServiceImplTest {
                 .thenReturn(Collections.emptyList());
 
         service.getAllBookingsByBookerIdAndState(1L, "ALL", null, null);
+        service.getAllBookingsByBookerIdAndState(1L, "PAST", null, null);
+        service.getAllBookingsByBookerIdAndState(1L, "FUTURE", null, null);
+        service.getAllBookingsByBookerIdAndState(1L, "CURRENT", null, null);
+        service.getAllBookingsByBookerIdAndState(1L, "WAITING", null, null);
+        service.getAllBookingsByBookerIdAndState(1L, "REJECTED", null, null);
 
         verify(bookingRepository, times(1))
                 .findByBookerIdOrderByStartDesc(anyLong());
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndEndIsBeforeOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class));
+        verify(bookingRepository, times(1))
+                .findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(LocalDateTime.class));
+        verify(bookingRepository, times(2))
+                .findByBookerIdAndStatusIsOrderByStartDesc(anyLong(),
+                        any(BookingConstant.class));
         verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -336,9 +376,31 @@ class BookingServiceImplTest {
                 .thenReturn(Collections.emptyList());
 
         service.getAllBookingsByOwnerIdAndState(1L, "ALL", 0, 20);
+        service.getAllBookingsByOwnerIdAndState(1L, "PAST", 0, 20);
+        service.getAllBookingsByOwnerIdAndState(1L, "FUTURE", 0, 20);
+        service.getAllBookingsByOwnerIdAndState(1L, "CURRENT", 0, 20);
+        service.getAllBookingsByOwnerIdAndState(1L, "WAITING", 0, 20);
+        service.getAllBookingsByOwnerIdAndState(1L, "REJECTED", 0, 20);
 
         verify(bookingRepository, times(1))
                 .findByItemOwnerOrderByStartDesc(anyLong(), any(PageRequest.class));
+        verify(bookingRepository, times(1))
+                .findByItemOwnerAndEndIsBeforeOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(PageRequest.class));
+        verify(bookingRepository, times(1))
+                .findByItemOwnerAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(PageRequest.class));
+        verify(bookingRepository, times(1))
+                .findByItemOwnerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(LocalDateTime.class),
+                        any(PageRequest.class));
+        verify(bookingRepository, times(2))
+                .findByItemOwnerAndStatusIsOrderByStartDesc(anyLong(),
+                        any(BookingConstant.class),
+                        any(PageRequest.class));
         verifyNoMoreInteractions(bookingRepository);
     }
 
@@ -349,9 +411,27 @@ class BookingServiceImplTest {
                 .thenReturn(Collections.emptyList());
 
         service.getAllBookingsByOwnerIdAndState(1L, "ALL", null, null);
+        service.getAllBookingsByOwnerIdAndState(1L, "PAST", null, null);
+        service.getAllBookingsByOwnerIdAndState(1L, "FUTURE", null, null);
+        service.getAllBookingsByOwnerIdAndState(1L, "CURRENT", null, null);
+        service.getAllBookingsByOwnerIdAndState(1L, "WAITING", null, null);
+        service.getAllBookingsByOwnerIdAndState(1L, "REJECTED", null, null);
 
         verify(bookingRepository, times(1))
                 .findByItemOwnerOrderByStartDesc(anyLong());
+        verify(bookingRepository, times(1))
+                .findByItemOwnerAndEndIsBeforeOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class));
+        verify(bookingRepository, times(1))
+                .findByItemOwnerAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class));
+        verify(bookingRepository, times(1))
+                .findByItemOwnerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(anyLong(),
+                        any(LocalDateTime.class),
+                        any(LocalDateTime.class));
+        verify(bookingRepository, times(2))
+                .findByItemOwnerAndStatusIsOrderByStartDesc(anyLong(),
+                        any(BookingConstant.class));
         verifyNoMoreInteractions(bookingRepository);
     }
 
