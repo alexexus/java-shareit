@@ -94,15 +94,15 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
         if (from == null || size == null) {
-            return itemRepository.
-                    findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
+            return itemRepository
+                    .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
                             text, text);
         }
         if (size < 1 || from < 0) {
             throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
         }
-        return itemRepository.
-                findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
+        return itemRepository
+                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
                         text, text, PageRequest.of(from / size, size));
     }
 

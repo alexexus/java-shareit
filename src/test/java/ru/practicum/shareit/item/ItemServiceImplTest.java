@@ -176,8 +176,8 @@ class ItemServiceImplTest {
 
     @Test
     void getItemsByText() {
-        when(itemRepository.
-                findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
+        when(itemRepository
+                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
                         anyString(), anyString(), any(PageRequest.class))).thenReturn(Collections.emptyList());
 
         service.getItemsByText("text", 0, 20);
@@ -196,8 +196,8 @@ class ItemServiceImplTest {
 
     @Test
     void getItemsByTextWithoutFromAndSize() {
-        when(itemRepository.
-                findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
+        when(itemRepository
+                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
                         anyString(), anyString())).thenReturn(Collections.emptyList());
 
         service.getItemsByText("text", null, null);
