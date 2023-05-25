@@ -5,8 +5,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.dto.BookingDtoItem;
-import ru.practicum.shareit.item.dto.CommentDto;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
