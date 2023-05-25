@@ -76,37 +76,16 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getAllBookingsByBookerIdAndState(long userId, String state, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        if (from == null || size == null) {
-            try {
-                BookingState bookingState = BookingState.valueOf(state);
-                switch (bookingState) {
-                    case ALL:
-                        return bookingRepository.findByBookerIdOrderByStartDesc(userId);
-                    case PAST:
-                        return bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
-                                LocalDateTime.now());
-                    case FUTURE:
-                        return bookingRepository.findByBookerIdAndEndIsAfterOrderByStartDesc(userId,
-                                LocalDateTime.now());
-                    case CURRENT:
-                        return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
-                                LocalDateTime.now(),
-                                LocalDateTime.now());
-                    case WAITING:
-                    case REJECTED:
-                        return bookingRepository.findByBookerIdAndStatusIsOrderByStartDesc(userId,
-                                BookingConstant.valueOf(bookingState.toString()));
-                }
-                return bookingRepository.findByBookerIdOrderByStartDesc(userId);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Unknown state: " + state);
-            }
-        }
-        if (size < 1 || from < 0) {
-            throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
-        }
+        BookingState bookingState;
         try {
-            BookingState bookingState = BookingState.valueOf(state);
+            bookingState = BookingState.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown state: " + state);
+        }
+        if (from != null && size != null) {
+            if (size < 1 || from < 0) {
+                throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
+            }
             switch (bookingState) {
                 case ALL:
                     return bookingRepository.findByBookerIdOrderByStartDesc(userId, PageRequest.of(from / size, size));
@@ -130,47 +109,42 @@ public class BookingServiceImpl implements BookingService {
                             PageRequest.of(from / size, size));
             }
             return bookingRepository.findByBookerIdOrderByStartDesc(userId, PageRequest.of(from / size, size));
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown state: " + state);
         }
+        switch (bookingState) {
+            case ALL:
+                return bookingRepository.findByBookerIdOrderByStartDesc(userId);
+            case PAST:
+                return bookingRepository.findByBookerIdAndEndIsBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now());
+            case FUTURE:
+                return bookingRepository.findByBookerIdAndEndIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now());
+            case CURRENT:
+                return bookingRepository.findByBookerIdAndStartIsBeforeAndEndIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now(),
+                        LocalDateTime.now());
+            case WAITING:
+            case REJECTED:
+                return bookingRepository.findByBookerIdAndStatusIsOrderByStartDesc(userId,
+                        BookingConstant.valueOf(bookingState.toString()));
+        }
+        return bookingRepository.findByBookerIdOrderByStartDesc(userId);
     }
 
     @Override
     public List<Booking> getAllBookingsByOwnerIdAndState(long userId, String state, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        if (from == null || size == null) {
-            try {
-                BookingState bookingState = BookingState.valueOf(state);
-                switch (bookingState) {
-                    case ALL:
-                        return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
-                    case PAST:
-                        return bookingRepository.findByItemOwnerAndEndIsBeforeOrderByStartDesc(userId,
-                                LocalDateTime.now());
-                    case FUTURE:
-                        return bookingRepository.findByItemOwnerAndEndIsAfterOrderByStartDesc(userId,
-                                LocalDateTime.now());
-                    case CURRENT:
-                        return bookingRepository.findByItemOwnerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
-                                userId,
-                                LocalDateTime.now(),
-                                LocalDateTime.now());
-                    case WAITING:
-                    case REJECTED:
-                        return bookingRepository.findByItemOwnerAndStatusIsOrderByStartDesc(userId,
-                                BookingConstant.valueOf(bookingState.toString()));
-                }
-                return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
-            } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Unknown state: " + state);
-            }
-        }
-        if (size < 1 || from < 0) {
-            throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
-        }
+        BookingState bookingState;
         try {
-            BookingState bookingState = BookingState.valueOf(state);
+            bookingState = BookingState.valueOf(state);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Unknown state: " + state);
+        }
+        if (from != null && size != null) {
+            if (size < 1 || from < 0) {
+                throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
+            }
             switch (bookingState) {
                 case ALL:
                     return bookingRepository.findByItemOwnerOrderByStartDesc(userId,
@@ -195,8 +169,26 @@ public class BookingServiceImpl implements BookingService {
                             BookingConstant.valueOf(bookingState.toString()), PageRequest.of(from / size, size));
             }
             return bookingRepository.findByItemOwnerOrderByStartDesc(userId, PageRequest.of(from / size, size));
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown state: " + state);
         }
+        switch (bookingState) {
+            case ALL:
+                return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
+            case PAST:
+                return bookingRepository.findByItemOwnerAndEndIsBeforeOrderByStartDesc(userId,
+                        LocalDateTime.now());
+            case FUTURE:
+                return bookingRepository.findByItemOwnerAndEndIsAfterOrderByStartDesc(userId,
+                        LocalDateTime.now());
+            case CURRENT:
+                return bookingRepository.findByItemOwnerAndStartIsBeforeAndEndIsAfterOrderByStartDesc(
+                        userId,
+                        LocalDateTime.now(),
+                        LocalDateTime.now());
+            case WAITING:
+            case REJECTED:
+                return bookingRepository.findByItemOwnerAndStatusIsOrderByStartDesc(userId,
+                        BookingConstant.valueOf(bookingState.toString()));
+        }
+        return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
     }
 }

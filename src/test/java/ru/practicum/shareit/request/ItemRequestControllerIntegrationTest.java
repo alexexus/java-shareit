@@ -22,7 +22,6 @@ import java.util.Collections;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -31,7 +30,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-class ItemRequestControllerIT {
+class ItemRequestControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -64,13 +63,13 @@ class ItemRequestControllerIT {
                 .id(1L)
                 .description("description")
                 .requestor(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .items(Collections.emptyList())
                 .build();
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(1L)
                 .description("description")
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .items(Collections.emptyList())
                 .build();
         when(itemRequestMapper.toItemRequest(any(ItemRequestDto.class))).thenReturn(itemRequest);
@@ -98,7 +97,7 @@ class ItemRequestControllerIT {
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk());
 
-        verify(itemRequestService).getItemRequestById(anyLong(), anyLong());
+        verify(itemRequestService).getItemRequestById(1L, 1L);
     }
 
     @SneakyThrows
@@ -110,7 +109,7 @@ class ItemRequestControllerIT {
                         .param("size", "20"))
                 .andExpect(status().isOk());
 
-        verify(itemRequestService).getAllItemRequestsPageable(anyLong(), anyInt(), anyInt());
+        verify(itemRequestService).getAllItemRequestsPageable(1L, 0, 20);
     }
 
     @SneakyThrows
@@ -120,6 +119,6 @@ class ItemRequestControllerIT {
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk());
 
-        verify(itemRequestService).getAllItemRequests(anyLong());
+        verify(itemRequestService).getAllItemRequests(1L);
     }
 }

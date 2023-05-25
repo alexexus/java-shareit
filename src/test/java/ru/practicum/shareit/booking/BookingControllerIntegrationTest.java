@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-class BookingControllerIT {
+class BookingControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -106,7 +106,7 @@ class BookingControllerIT {
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk());
 
-        verify(bookingService).getBookingById(anyLong(), anyLong());
+        verify(bookingService).getBookingById(1L, 1L);
     }
 
     @SneakyThrows
@@ -116,8 +116,8 @@ class BookingControllerIT {
         Item item = Item.builder().id(1L).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.MAX.minusDays(1))
-                .end(LocalDateTime.MAX.minusHours(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -155,7 +155,7 @@ class BookingControllerIT {
                         .param("state", "ALL"))
                 .andExpect(status().isOk());
 
-        verify(bookingService).getAllBookingsByBookerIdAndState(anyLong(), anyString(), anyInt(), anyInt());
+        verify(bookingService).getAllBookingsByBookerIdAndState(1L, "ALL", 0, 20);
     }
 
     @SneakyThrows
@@ -182,6 +182,6 @@ class BookingControllerIT {
                         .param("state", "ALL"))
                 .andExpect(status().isOk());
 
-        verify(bookingService).getAllBookingsByOwnerIdAndState(anyLong(), anyString(), anyInt(), anyInt());
+        verify(bookingService).getAllBookingsByOwnerIdAndState(1L, "ALL", 0, 20);
     }
 }

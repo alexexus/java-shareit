@@ -40,10 +40,8 @@ public class ItemRequestController {
 
     @GetMapping("/all")
     public List<ItemRequestDto> getAllItemRequestsPageable(@RequestHeader(USER_ID) long userId,
-                                                           @RequestParam(name = "from",
-                                                                   required = false) Integer from,
-                                                           @RequestParam(name = "size",
-                                                                   required = false) Integer size) {
+                                                           @RequestParam(name = "from", required = false) Integer from,
+                                                           @RequestParam(name = "size", required = false) Integer size) {
         return itemRequestService.getAllItemRequestsPageable(userId, from, size).stream()
                 .map(itemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());

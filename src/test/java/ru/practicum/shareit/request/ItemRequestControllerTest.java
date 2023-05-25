@@ -38,13 +38,13 @@ class ItemRequestControllerTest {
                 .id(1L)
                 .description("description")
                 .requestor(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .items(Collections.emptyList())
                 .build();
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(1L)
                 .description("description")
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .items(Collections.emptyList())
                 .build();
         when(mapper.toItemRequest(any(ItemRequestDto.class))).thenReturn(itemRequest);
@@ -54,7 +54,7 @@ class ItemRequestControllerTest {
         ItemRequestDto actual = controller.addItemRequest(1L, itemRequestDto);
 
         assertEquals(actual, itemRequestDto);
-        verify(service, times(1)).addItemRequest(any(ItemRequest.class), anyLong());
+        verify(service, times(1)).addItemRequest(itemRequest, 1L);
         verifyNoMoreInteractions(service);
     }
 
@@ -65,13 +65,13 @@ class ItemRequestControllerTest {
                 .id(1L)
                 .description("description")
                 .requestor(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .items(Collections.emptyList())
                 .build();
         ItemRequestDto itemRequestDto = ItemRequestDto.builder()
                 .id(1L)
                 .description("description")
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .items(Collections.emptyList())
                 .build();
         when(mapper.toItemRequestDto(any(ItemRequest.class))).thenReturn(itemRequestDto);
@@ -80,7 +80,7 @@ class ItemRequestControllerTest {
         ItemRequestDto actual = controller.getItemRequestById(1L, 1L);
 
         assertEquals(actual, itemRequestDto);
-        verify(service, times(1)).getItemRequestById(anyLong(), anyLong());
+        verify(service, times(1)).getItemRequestById(1L, 1L);
         verifyNoMoreInteractions(service);
     }
 
@@ -91,7 +91,7 @@ class ItemRequestControllerTest {
         List<ItemRequestDto> actual = controller.getAllItemRequestsPageable(1L, 0, 20);
 
         assertEquals(0, actual.size());
-        verify(service, times(1)).getAllItemRequestsPageable(anyLong(), anyInt(), anyInt());
+        verify(service, times(1)).getAllItemRequestsPageable(1L, 0, 20);
         verifyNoMoreInteractions(service);
     }
 
@@ -102,7 +102,7 @@ class ItemRequestControllerTest {
         List<ItemRequestDto> actual = controller.getAllItemRequests(1L);
 
         assertEquals(0, actual.size());
-        verify(service, times(1)).getAllItemRequests(anyLong());
+        verify(service, times(1)).getAllItemRequests(1L);
         verifyNoMoreInteractions(service);
     }
 }

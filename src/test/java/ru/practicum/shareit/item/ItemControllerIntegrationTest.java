@@ -36,7 +36,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
-class ItemControllerIT {
+class ItemControllerIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -105,7 +105,7 @@ class ItemControllerIT {
                         .header("X-Sharer-User-Id", 1L))
                 .andExpect(status().isOk());
 
-        verify(itemService).getItemById(anyLong(), anyLong());
+        verify(itemService).getItemById(1L, 1L);
     }
 
     @SneakyThrows
@@ -193,7 +193,7 @@ class ItemControllerIT {
                         .param("text", "text"))
                 .andExpect(status().isOk());
 
-        verify(itemService).getItemsByText(anyString(), anyInt(), anyInt());
+        verify(itemService).getItemsByText("text", 0, 20);
     }
 
     @SneakyThrows
@@ -229,7 +229,7 @@ class ItemControllerIT {
                         .param("size", "20"))
                 .andExpect(status().isOk());
 
-        verify(itemService).getAllItemsByUserId(anyLong(), anyInt(), anyInt());
+        verify(itemService).getAllItemsByUserId(1L, 0, 20);
     }
 
     @SneakyThrows
@@ -242,13 +242,13 @@ class ItemControllerIT {
                 .text("text")
                 .item(item)
                 .author(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         CommentDto commentDto = CommentDto.builder()
                 .id(1L)
                 .text("text")
                 .authorName("name")
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         when(commentMapper.toCommentDto(any(Comment.class))).thenReturn(commentDto);
         when(itemService.addComment(any(Comment.class), anyLong(), anyLong())).thenReturn(comment);

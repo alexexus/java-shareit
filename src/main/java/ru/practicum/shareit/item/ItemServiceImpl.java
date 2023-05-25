@@ -5,7 +5,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingConstant;
-import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -28,8 +27,6 @@ public class ItemServiceImpl implements ItemService {
     private final BookingRepository bookingRepository;
     private final CommentRepository commentRepository;
     private final ItemRequestRepository itemRequestRepository;
-    private final BookingMapper bookingMapper;
-    private final CommentMapper commentMapper;
 
     @Override
     public Item addItem(Item item, long userId) {
@@ -47,15 +44,13 @@ public class ItemServiceImpl implements ItemService {
     public Item getItemById(long itemId, long userId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Item not found"));
-        item.setComments(commentRepository.findByItemId(itemId).stream()
-                .map(commentMapper::toCommentDto)
-                .collect(Collectors.toList()));
+        item.setComments(commentRepository.findByItemId(itemId));
         List<Booking> bookings = bookingRepository.findByItemId(itemId);
         if (bookings.isEmpty() || item.getOwner() != userId) {
             return item;
         }
-        item.setLastBooking(bookingMapper.toBookingDtoItem(getLastBooking(bookings)));
-        item.setNextBooking(bookingMapper.toBookingDtoItem(getNextBooking(bookings)));
+        item.setLastBooking(getLastBooking(bookings));
+        item.setNextBooking(getNextBooking(bookings));
         return item;
     }
 
@@ -94,16 +89,12 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
         if (from == null || size == null) {
-            return itemRepository
-                    .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                            text, text);
+            return itemRepository.searchByText(text, text);
         }
         if (size < 1 || from < 0) {
             throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
         }
-        return itemRepository
-                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                        text, text, PageRequest.of(from / size, size));
+        return itemRepository.searchByText(text, text, PageRequest.of(from / size, size));
     }
 
     @Override
@@ -164,8 +155,8 @@ public class ItemServiceImpl implements ItemService {
             if (bookings.isEmpty()) {
                 continue;
             }
-            i.setLastBooking(bookingMapper.toBookingDtoItem(getLastBooking(bookings)));
-            i.setNextBooking(bookingMapper.toBookingDtoItem(getNextBooking(bookings)));
+            i.setLastBooking(getLastBooking(bookings));
+            i.setNextBooking(getNextBooking(bookings));
         }
         return items;
     }

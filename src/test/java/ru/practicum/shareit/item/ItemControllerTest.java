@@ -5,6 +5,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.dto.BookingDtoItem;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -64,7 +65,7 @@ class ItemControllerTest {
         ItemDto actual = controller.addItem(1L, itemDto);
 
         assertEquals(actual, itemDto);
-        verify(service, times(1)).addItem(any(Item.class), anyLong());
+        verify(service, times(1)).addItem(item, 1L);
         verifyNoMoreInteractions(service);
     }
 
@@ -76,8 +77,8 @@ class ItemControllerTest {
                 .description("description")
                 .available(true)
                 .owner(1L)
-                .lastBooking(BookingDtoItem.builder().build())
-                .nextBooking(BookingDtoItem.builder().build())
+                .lastBooking(Booking.builder().build())
+                .nextBooking(Booking.builder().build())
                 .comments(Collections.emptyList())
                 .build();
         ItemDtoWithComments itemDtoWithComments = ItemDtoWithComments.builder()
@@ -96,7 +97,7 @@ class ItemControllerTest {
         ItemDtoWithComments actual = controller.getItemById(1L, 1L);
 
         assertEquals(actual, itemDtoWithComments);
-        verify(service, times(1)).getItemById(anyLong(), anyLong());
+        verify(service, times(1)).getItemById(1L, 1L);
         verifyNoMoreInteractions(service);
     }
 
@@ -125,7 +126,7 @@ class ItemControllerTest {
         ItemDto actual = controller.updateItem(1L, itemDto, 1L);
 
         assertEquals(actual, itemDto);
-        verify(service, times(1)).updateItem(any(Item.class), anyLong(), anyLong());
+        verify(service, times(1)).updateItem(item, 1L, 1L);
         verifyNoMoreInteractions(service);
     }
 
@@ -134,7 +135,7 @@ class ItemControllerTest {
         doNothing().when(service).deleteItem(anyLong());
 
         controller.deleteItem(999L, 999L);
-        verify(service, times(1)).deleteItem(anyLong());
+        verify(service, times(1)).deleteItem(999L);
         verifyNoMoreInteractions(service);
     }
 
@@ -145,7 +146,7 @@ class ItemControllerTest {
         List<ItemDto> actual = controller.getItemsByText(1L, "text", 0, 20);
 
         assertEquals(0, actual.size());
-        verify(service, times(1)).getItemsByText(anyString(), anyInt(), anyInt());
+        verify(service, times(1)).getItemsByText("text", 0, 20);
         verifyNoMoreInteractions(service);
     }
 
@@ -156,7 +157,7 @@ class ItemControllerTest {
         List<ItemDtoWithBookings> actual = controller.getAllItemsByUserId(1L, 0, 20);
 
         assertEquals(0, actual.size());
-        verify(service, times(1)).getAllItemsByUserId(anyLong(), anyInt(), anyInt());
+        verify(service, times(1)).getAllItemsByUserId(1L, 0, 20);
         verifyNoMoreInteractions(service);
     }
 
@@ -169,13 +170,13 @@ class ItemControllerTest {
                 .text("text")
                 .item(item)
                 .author(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         CommentDto commentDto = CommentDto.builder()
                 .id(1L)
                 .text("text")
                 .authorName("name")
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         when(commentMapper.toCommentDto(any(Comment.class))).thenReturn(commentDto);
         when(service.addComment(any(Comment.class), anyLong(), anyLong())).thenReturn(comment);
@@ -183,7 +184,7 @@ class ItemControllerTest {
         CommentDto actual = controller.addComment(1L, 1L, comment);
 
         assertEquals(actual, commentDto);
-        verify(service, times(1)).addComment(any(Comment.class), anyLong(), anyLong());
+        verify(service, times(1)).addComment(comment, 1L, 1L);
         verifyNoMoreInteractions(service);
     }
 }

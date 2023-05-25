@@ -48,7 +48,7 @@ class UserControllerTest {
         UserDto actual = controller.addUser(userDto);
 
         assertEquals(actual, userDto);
-        verify(service, times(1)).addUser(any(User.class));
+        verify(service, times(1)).addUser(user);
         verifyNoMoreInteractions(service);
     }
 
@@ -70,7 +70,7 @@ class UserControllerTest {
         UserDto actual = controller.getUserById(1L);
 
         assertEquals(actual, userDto);
-        verify(service, times(1)).getUserById(anyLong());
+        verify(service, times(1)).getUserById(1L);
         verifyNoMoreInteractions(service);
     }
 
@@ -93,7 +93,7 @@ class UserControllerTest {
         UserDto actual = controller.updateUser(userDto, 1L);
 
         assertEquals(actual, userDto);
-        verify(service, times(1)).updateUser(any(User.class));
+        verify(service, times(1)).updateUser(user);
         verifyNoMoreInteractions(service);
     }
 
@@ -102,7 +102,7 @@ class UserControllerTest {
         doNothing().when(service).deleteUser(anyLong());
 
         controller.deleteUser(999L);
-        verify(service, times(1)).deleteUser(anyLong());
+        verify(service, times(1)).deleteUser(999L);
         verifyNoMoreInteractions(service);
     }
 

@@ -53,25 +53,19 @@ public class BookingController {
 
     @GetMapping
     public List<Booking> getAllBookingsByUserId(@RequestHeader(USER_ID) long userId,
-                                                @RequestParam(name = "state",
-                                                        required = false,
-                                                        defaultValue = "ALL") String state,
-                                                @RequestParam(name = "from",
-                                                        required = false) Integer from,
-                                                @RequestParam(name = "size",
-                                                        required = false) Integer size) {
+                                                @RequestParam(name = "state", required = false, defaultValue = "ALL")
+                                                String state,
+                                                @RequestParam(name = "from", required = false) Integer from,
+                                                @RequestParam(name = "size", required = false) Integer size) {
         return bookingService.getAllBookingsByBookerIdAndState(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<Booking> getAllBookingsByState(@RequestHeader(USER_ID) long userId,
-                                               @RequestParam(name = "state",
-                                                       required = false,
-                                                       defaultValue = "ALL") String state,
-                                               @RequestParam(name = "from",
-                                                       required = false) Integer from,
-                                               @RequestParam(name = "size",
-                                                       required = false) Integer size) {
+                                               @RequestParam(name = "state", required = false, defaultValue = "ALL")
+                                               String state,
+                                               @RequestParam(name = "from", required = false) Integer from,
+                                               @RequestParam(name = "size", required = false) Integer size) {
         return bookingService.getAllBookingsByOwnerIdAndState(userId, state, from, size);
     }
 }

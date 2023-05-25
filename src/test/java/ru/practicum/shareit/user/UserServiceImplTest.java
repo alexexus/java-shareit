@@ -34,10 +34,10 @@ class UserServiceImplTest {
         User userToSave = User.builder().id(1L).name("name1").email("1@mail.com").build();
         when(repository.save(any(User.class))).thenReturn(userToSave);
 
-        User actual = service.addUser(new User());
+        User actual = service.addUser(userToSave);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(userToSave);
-        verify(repository, times(1)).save(any(User.class));
+        verify(repository, times(1)).save(userToSave);
         verifyNoMoreInteractions(repository);
     }
 
@@ -49,7 +49,7 @@ class UserServiceImplTest {
         User actual = service.getUserById(999L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(expectedUser);
-        verify(repository, times(1)).findById(anyLong());
+        verify(repository, times(1)).findById(999L);
         verifyNoMoreInteractions(repository);
     }
 
@@ -77,7 +77,7 @@ class UserServiceImplTest {
         when(repository.findById(anyLong())).thenReturn(Optional.of(new User()));
 
         service.deleteUser(999L);
-        verify(repository, times(1)).deleteById(anyLong());
+        verify(repository, times(1)).deleteById(999L);
         verifyNoMoreInteractions(repository);
     }
 
@@ -99,7 +99,7 @@ class UserServiceImplTest {
         User actual = service.updateUser(user);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(user);
-        verify(repository, times(1)).save(any(User.class));
+        verify(repository, times(1)).save(user);
         verifyNoMoreInteractions(repository);
     }
 

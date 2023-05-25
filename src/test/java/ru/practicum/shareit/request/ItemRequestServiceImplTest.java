@@ -45,7 +45,7 @@ class ItemRequestServiceImplTest {
                 .id(1L)
                 .description("description")
                 .requestor(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemRequestRepository.save(any(ItemRequest.class))).thenReturn(itemRequest);
@@ -53,7 +53,7 @@ class ItemRequestServiceImplTest {
         ItemRequest actual = service.addItemRequest(itemRequest, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(itemRequest);
-        verify(itemRequestRepository, times(1)).save(any(ItemRequest.class));
+        verify(itemRequestRepository, times(1)).save(itemRequest);
         verifyNoMoreInteractions(itemRequestRepository);
     }
 
@@ -64,7 +64,7 @@ class ItemRequestServiceImplTest {
                 .id(1L)
                 .description("description")
                 .requestor(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.empty());
 
@@ -79,7 +79,7 @@ class ItemRequestServiceImplTest {
                 .id(1L)
                 .description("description")
                 .requestor(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
         when(itemRequestRepository.findById(anyLong())).thenReturn(Optional.of(itemRequest));
@@ -88,7 +88,7 @@ class ItemRequestServiceImplTest {
         ItemRequest actual = service.getItemRequestById(1L, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(itemRequest);
-        verify(itemRequestRepository, times(1)).findById(anyLong());
+        verify(itemRequestRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(itemRequestRepository);
     }
 
@@ -119,7 +119,7 @@ class ItemRequestServiceImplTest {
         service.getAllItemRequestsPageable(1L, 0, 20);
 
         verify(itemRequestRepository, times(1))
-                .findByRequestorIdNotOrderByCreatedDesc(anyLong(), any(PageRequest.class));
+                .findByRequestorIdNotOrderByCreatedDesc(1L, PageRequest.of(0 / 20, 20));
         verifyNoMoreInteractions(itemRequestRepository);
     }
 
@@ -138,7 +138,7 @@ class ItemRequestServiceImplTest {
 
         service.getAllItemRequestsPageable(1L, null, null);
 
-        verify(itemRequestRepository, times(1)).findByRequestorId(anyLong());
+        verify(itemRequestRepository, times(1)).findByRequestorId(1L);
         verifyNoMoreInteractions(itemRequestRepository);
     }
 
@@ -157,7 +157,7 @@ class ItemRequestServiceImplTest {
 
         service.getAllItemRequests(1L);
 
-        verify(itemRequestRepository, times(1)).findByRequestorId(anyLong());
+        verify(itemRequestRepository, times(1)).findByRequestorId(1L);
         verifyNoMoreInteractions(itemRequestRepository);
     }
 

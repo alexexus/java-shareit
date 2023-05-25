@@ -45,8 +45,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -58,7 +58,7 @@ class BookingServiceImplTest {
         Booking actual = service.addBooking(booking, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(booking);
-        verify(repository, times(1)).save(any(Booking.class));
+        verify(repository, times(1)).save(booking);
         verifyNoMoreInteractions(repository);
     }
 
@@ -68,8 +68,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -86,8 +86,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -105,8 +105,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(false).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -124,8 +124,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().minusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(1999, 1, 1, 0, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -143,8 +143,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(1L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(booker)
                 .status(BookingConstant.WAITING)
@@ -162,8 +162,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -174,7 +174,7 @@ class BookingServiceImplTest {
         Booking actual = service.getBookingById(1L, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(booking);
-        verify(repository, times(1)).findById(anyLong());
+        verify(repository, times(1)).findById(1L);
         verifyNoMoreInteractions(repository);
     }
 
@@ -203,8 +203,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(2L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -222,16 +222,16 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(1L).build();
         Booking bookingToUpdate = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
                 .build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.APPROVED)
@@ -243,7 +243,7 @@ class BookingServiceImplTest {
         Booking actual = service.updateBooking(1L, 1L, true);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(booking);
-        verify(repository, times(1)).save(any(Booking.class));
+        verify(repository, times(1)).save(booking);
         verifyNoMoreInteractions(repository);
     }
 
@@ -271,8 +271,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(2L).build();
         Booking bookingToUpdate = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -291,8 +291,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(1L).build();
         Booking bookingToUpdate = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.APPROVED)
@@ -311,16 +311,16 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(1L).build();
         Booking bookingToUpdate = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
                 .build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.REJECTED)
@@ -332,7 +332,7 @@ class BookingServiceImplTest {
         Booking actual = service.updateBooking(1L, 1L, false);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(booking);
-        verify(repository, times(1)).save(any(Booking.class));
+        verify(repository, times(1)).save(booking);
         verifyNoMoreInteractions(repository);
     }
 
@@ -342,8 +342,8 @@ class BookingServiceImplTest {
         Item item = Item.builder().id(1L).available(true).owner(1L).build();
         Booking booking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now())
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
+                .end(LocalDateTime.of(2000, 1, 1, 1, 0))
                 .item(item)
                 .booker(user)
                 .status(BookingConstant.WAITING)
@@ -354,7 +354,7 @@ class BookingServiceImplTest {
 
         service.deleteBooking(1L, 1L);
 
-        verify(repository, times(1)).deleteById(anyLong());
+        verify(repository, times(1)).deleteById(1L);
         verifyNoMoreInteractions(repository);
     }
 

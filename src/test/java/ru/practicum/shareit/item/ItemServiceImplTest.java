@@ -8,7 +8,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingConstant;
-import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -48,10 +47,6 @@ class ItemServiceImplTest {
     private CommentRepository commentRepository;
     @Mock
     private ItemRequestRepository itemRequestRepository;
-    @Mock
-    private BookingMapper bookingMapper;
-    @Mock
-    private CommentMapper commentMapper;
 
     @Test
     void addItem() {
@@ -69,7 +64,7 @@ class ItemServiceImplTest {
         Item actual = service.addItem(itemToSave, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(itemToSave);
-        verify(itemRepository, times(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).save(itemToSave);
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -116,14 +111,14 @@ class ItemServiceImplTest {
                 .build();
         Booking lastBooking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now().minusDays(1))
-                .end(LocalDateTime.now().minusHours(1))
+                .start(LocalDateTime.MAX.minusDays(1))
+                .end(LocalDateTime.MAX.minusHours(1))
                 .status(BookingConstant.APPROVED)
                 .build();
         Booking nextBooking = Booking.builder()
                 .id(2L)
-                .start(LocalDateTime.now().plusHours(1))
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.MAX.minusDays(1))
+                .end(LocalDateTime.MAX.minusHours(1))
                 .status(BookingConstant.APPROVED)
                 .build();
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(expectedItem));
@@ -133,7 +128,7 @@ class ItemServiceImplTest {
         Item actual = service.getItemById(1L, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(expectedItem);
-        verify(itemRepository, times(1)).findById(anyLong());
+        verify(itemRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -162,7 +157,7 @@ class ItemServiceImplTest {
         Item actual = service.getItemById(1L, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(expectedItem);
-        verify(itemRepository, times(1)).findById(anyLong());
+        verify(itemRepository, times(1)).findById(1L);
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -190,7 +185,7 @@ class ItemServiceImplTest {
         Item actual = service.updateItem(item, 1L, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(item);
-        verify(itemRepository, times(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).save(item);
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -218,7 +213,7 @@ class ItemServiceImplTest {
         Item actual = service.updateItem(item, 1L, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(item);
-        verify(itemRepository, times(1)).save(any(Item.class));
+        verify(itemRepository, times(1)).save(itemToUpdate);
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -238,7 +233,7 @@ class ItemServiceImplTest {
 
         service.deleteItem(1L);
 
-        verify(itemRepository, times(1)).deleteById(anyLong());
+        verify(itemRepository, times(1)).deleteById(1L);
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -252,15 +247,13 @@ class ItemServiceImplTest {
 
     @Test
     void getItemsByText() {
-        when(itemRepository
-                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                        anyString(), anyString(), any(PageRequest.class))).thenReturn(Collections.emptyList());
+        when(itemRepository.searchByText(anyString(), anyString(), any(PageRequest.class)))
+                .thenReturn(Collections.emptyList());
 
         service.getItemsByText("text", 0, 20);
 
-        verify(itemRepository, times(1))
-                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                        anyString(), anyString(), any(PageRequest.class));
+        verify(itemRepository, times(1)).searchByText("text", "text",
+                PageRequest.of(0 / 20, 20));
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -272,15 +265,11 @@ class ItemServiceImplTest {
 
     @Test
     void getItemsByTextWithoutFromAndSize() {
-        when(itemRepository
-                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                        anyString(), anyString())).thenReturn(Collections.emptyList());
+        when(itemRepository.searchByText(anyString(), anyString())).thenReturn(Collections.emptyList());
 
         service.getItemsByText("text", null, null);
 
-        verify(itemRepository, times(1))
-                .findByNameContainingIgnoreCaseAndAvailableIsTrueOrDescriptionContainingIgnoreCaseAndAvailableIsTrue(
-                        anyString(), anyString());
+        verify(itemRepository, times(1)).searchByText("text", "text");
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -302,7 +291,8 @@ class ItemServiceImplTest {
 
         service.getAllItemsByUserId(1L, 0, 20);
 
-        verify(itemRepository, times(1)).findByOwner(anyLong(), any(PageRequest.class));
+        verify(itemRepository, times(1)).findByOwner(1L,
+                PageRequest.of(0 / 20, 20));
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -311,14 +301,14 @@ class ItemServiceImplTest {
         Item item = Item.builder().id(1L).build();
         Booking lastBooking = Booking.builder()
                 .id(1L)
-                .start(LocalDateTime.now().minusDays(1))
-                .end(LocalDateTime.now().minusHours(1))
+                .start(LocalDateTime.MAX.minusDays(3))
+                .end(LocalDateTime.MAX.minusDays(2))
                 .status(BookingConstant.APPROVED)
                 .build();
         Booking nextBooking = Booking.builder()
                 .id(2L)
-                .start(LocalDateTime.now().plusHours(1))
-                .end(LocalDateTime.now().plusDays(1))
+                .start(LocalDateTime.MAX.minusDays(1))
+                .end(LocalDateTime.MAX.minusHours(1))
                 .status(BookingConstant.APPROVED)
                 .build();
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
@@ -327,7 +317,7 @@ class ItemServiceImplTest {
 
         service.getAllItemsByUserId(1L, null, null);
 
-        verify(itemRepository, times(1)).findByOwner(anyLong());
+        verify(itemRepository, times(1)).findByOwner(1L);
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -356,7 +346,7 @@ class ItemServiceImplTest {
                 .text("text")
                 .item(item)
                 .author(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         Booking booking = Booking.builder().booker(user).build();
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
@@ -368,7 +358,7 @@ class ItemServiceImplTest {
         Comment actual = service.addComment(commentToSave, 1L, 1L);
 
         assertThat(actual).usingRecursiveComparison().isEqualTo(commentToSave);
-        verify(commentRepository, times(1)).save(any(Comment.class));
+        verify(commentRepository, times(1)).save(commentToSave);
         verifyNoMoreInteractions(commentRepository);
     }
 
@@ -381,7 +371,7 @@ class ItemServiceImplTest {
                 .text(" ")
                 .item(item)
                 .author(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
 
         assertThrows(ValidationException.class,
@@ -400,7 +390,7 @@ class ItemServiceImplTest {
                 .text("text")
                 .item(item)
                 .author(author)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
                 .thenReturn(List.of(booking));
@@ -419,7 +409,7 @@ class ItemServiceImplTest {
                 .text("text")
                 .item(item)
                 .author(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         Booking booking = Booking.builder().booker(user).build();
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
@@ -440,7 +430,7 @@ class ItemServiceImplTest {
                 .text("text")
                 .item(item)
                 .author(user)
-                .created(LocalDateTime.now())
+                .created(LocalDateTime.of(2000, 1, 1, 0, 0))
                 .build();
         Booking booking = Booking.builder().booker(user).build();
         when(bookingRepository.findByItemIdAndEndIsBefore(anyLong(), any(LocalDateTime.class)))
