@@ -11,9 +11,9 @@ public interface ItemService {
 
     void deleteItem(long itemId);
 
-    List<Item> getItemsByText(String text);
+    List<Item> getItemsByText(String text, Integer from, Integer size);
 
-    List<Item> getAllItemsByUserId(long userId);
+    List<Item> getAllItemsByUserId(long userId, Integer from, Integer size);
 
     Comment addComment(Comment comment, long userId, long itemId);
 }

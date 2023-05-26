@@ -4,8 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import ru.practicum.shareit.booking.dto.BookingDtoItem;
-import ru.practicum.shareit.item.dto.CommentDto;
+import ru.practicum.shareit.booking.Booking;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,11 +41,14 @@ public class Item {
     private Long owner;
 
     @Transient
-    private BookingDtoItem lastBooking;
+    private Booking lastBooking;
 
     @Transient
-    private BookingDtoItem nextBooking;
+    private Booking nextBooking;
 
     @Transient
-    private List<CommentDto> comments = Collections.emptyList();
+    private List<Comment> comments = Collections.emptyList();
+
+    @Column(name = "request_id")
+    private Long requestId;
 }

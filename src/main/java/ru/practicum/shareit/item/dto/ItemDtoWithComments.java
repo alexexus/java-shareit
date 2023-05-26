@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 @AllArgsConstructor
 public class ItemDtoWithComments {
-
     private Long id;
     private String name;
     private String description;

@@ -1,12 +1,21 @@
 package ru.practicum.shareit.item;
 
+import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.BookingMapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemDtoWithBookings;
 import ru.practicum.shareit.item.dto.ItemDtoWithComments;
 
+import java.util.stream.Collectors;
+
 @Component
+@AllArgsConstructor
 public class ItemMapper {
+
+    private BookingMapper bookingMapper;
+    private CommentMapper commentMapper;
+
     public ItemDto toItemDto(Item item) {
         return ItemDto.builder()
                 .id(item.getId())
@@ -14,6 +23,7 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(item.getOwner())
+                .requestId(item.getRequestId())
                 .build();
     }
 
@@ -24,6 +34,7 @@ public class ItemMapper {
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
                 .owner(itemDto.getOwner())
+                .requestId(itemDto.getRequestId())
                 .build();
     }
 
@@ -34,8 +45,8 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(item.getOwner())
-                .lastBooking(item.getLastBooking())
-                .nextBooking(item.getNextBooking())
+                .lastBooking(bookingMapper.toBookingDtoItem(item.getLastBooking()))
+                .nextBooking(bookingMapper.toBookingDtoItem(item.getNextBooking()))
                 .build();
     }
 
@@ -46,9 +57,9 @@ public class ItemMapper {
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .owner(item.getOwner())
-                .lastBooking(item.getLastBooking())
-                .nextBooking(item.getNextBooking())
-                .comments(item.getComments())
+                .lastBooking(bookingMapper.toBookingDtoItem(item.getLastBooking()))
+                .nextBooking(bookingMapper.toBookingDtoItem(item.getNextBooking()))
+                .comments(item.getComments().stream().map(commentMapper::toCommentDto).collect(Collectors.toList()))
                 .build();
     }
 }

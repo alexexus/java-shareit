@@ -23,47 +23,49 @@ import java.util.List;
 public class BookingController {
 
     public static final String USER_ID = "X-Sharer-User-Id";
-    private final BookingServiceImpl bookingServiceImpl;
+    private final BookingService bookingService;
     private final BookingMapper bookingMapper;
 
     @PostMapping
     public Booking addBooking(@RequestHeader(USER_ID) long userId,
                               @Validated(OnCreate.class) @RequestBody BookingDto bookingDto) {
-        return bookingServiceImpl.addBooking(bookingMapper.toBooking(bookingDto), userId);
+        return bookingService.addBooking(bookingMapper.toBooking(bookingDto), userId);
     }
 
     @GetMapping("/{bookingId}")
     public Booking getBookingById(@RequestHeader(USER_ID) long userId,
                                   @PathVariable long bookingId) {
-        return bookingServiceImpl.getBookingById(bookingId, userId);
+        return bookingService.getBookingById(bookingId, userId);
     }
 
     @PatchMapping("/{bookingId}")
     public Booking updateBooking(@RequestHeader(USER_ID) long userId,
                                  @PathVariable long bookingId,
                                  @RequestParam(name = "approved") boolean approved) {
-        return bookingServiceImpl.updateBooking(userId, bookingId, approved);
+        return bookingService.updateBooking(userId, bookingId, approved);
     }
 
     @DeleteMapping("/{bookingId}")
     public void deleteBooking(@RequestHeader(USER_ID) long userId,
                               @PathVariable long bookingId) {
-        bookingServiceImpl.deleteBooking(bookingId, userId);
+        bookingService.deleteBooking(bookingId, userId);
     }
 
     @GetMapping
     public List<Booking> getAllBookingsByUserId(@RequestHeader(USER_ID) long userId,
-                                                @RequestParam(name = "state",
-                                                        required = false,
-                                                        defaultValue = "ALL") String state) {
-        return bookingServiceImpl.getAllBookingsByBookerIdAndState(userId, state);
+                                                @RequestParam(name = "state", required = false, defaultValue = "ALL")
+                                                String state,
+                                                @RequestParam(name = "from", required = false) Integer from,
+                                                @RequestParam(name = "size", required = false) Integer size) {
+        return bookingService.getAllBookingsByBookerIdAndState(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<Booking> getAllBookingsByState(@RequestHeader(USER_ID) long userId,
-                                               @RequestParam(name = "state",
-                                                       required = false,
-                                                       defaultValue = "ALL") String state) {
-        return bookingServiceImpl.getAllBookingsByOwnerIdAndState(userId, state);
+                                               @RequestParam(name = "state", required = false, defaultValue = "ALL")
+                                               String state,
+                                               @RequestParam(name = "from", required = false) Integer from,
+                                               @RequestParam(name = "size", required = false) Integer size) {
+        return bookingService.getAllBookingsByOwnerIdAndState(userId, state, from, size);
     }
 }
