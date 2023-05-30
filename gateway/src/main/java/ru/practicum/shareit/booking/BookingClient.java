@@ -10,6 +10,7 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 import ru.practicum.shareit.client.BaseClient;
+import ru.practicum.shareit.exception.ValidationException;
 
 import java.util.Map;
 
@@ -45,8 +46,11 @@ public class BookingClient extends BaseClient {
         return get("/owner?state={state}&from={from}&size={size}", userId, parameters);
     }
 
-    public ResponseEntity<Object> bookItem(Long userId, BookingRequestDto requestDto) {
-        return post("", userId, null, requestDto);
+    public ResponseEntity<Object> addBooking(Long userId, BookingRequestDto bookingDto) {
+        if (bookingDto.getEnd().isBefore(bookingDto.getStart()) || bookingDto.getEnd().isEqual(bookingDto.getStart())) {
+            throw new ValidationException("Wrong time");
+        }
+        return post("", userId, null, bookingDto);
     }
 
     public ResponseEntity<Object> updateBooking(Long userId, Long bookingId, boolean approved) {
@@ -56,7 +60,7 @@ public class BookingClient extends BaseClient {
         return patch("/" + bookingId + "?approved={approved}", userId, parameters, null);
     }
 
-    public ResponseEntity<Object> getBooking(Long userId, Long bookingId) {
+    public ResponseEntity<Object> getBookingById(Long userId, Long bookingId) {
         return get("/" + bookingId, userId);
     }
 

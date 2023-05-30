@@ -1,6 +1,6 @@
 package ru.practicum.shareit.booking.dto;
 
-public enum BookingConstant {
+public enum BookingStatus {
     WAITING,
     APPROVED,
     REJECTED,

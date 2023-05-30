@@ -14,8 +14,8 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import ru.practicum.shareit.OnCreate;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.model.Comment;
 
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
@@ -72,7 +72,7 @@ public class ItemController {
     @PostMapping("/{itemId}/comment")
     public ResponseEntity<Object> addComment(@RequestHeader(USER_ID) Long userId,
                                              @PathVariable Long itemId,
-                                             @RequestBody Comment comment) {
-        return itemClient.addComment(userId, itemId, comment);
+                                             @RequestBody CommentDto commentDto) {
+        return itemClient.addComment(userId, itemId, commentDto);
     }
 }

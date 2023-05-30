@@ -29,9 +29,6 @@ public class BookingServiceImpl implements BookingService {
         if (!booking.getItem().getAvailable()) {
             throw new ValidationException("Item not available");
         }
-        if (booking.getEnd().isBefore(booking.getStart()) || booking.getEnd().isEqual(booking.getStart())) {
-            throw new ValidationException("Wrong time");
-        }
         if (booking.getItem().getOwner() == userId) {
             throw new NotFoundException("The owner cannot book his item");
         }
@@ -76,17 +73,8 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getAllBookingsByBookerIdAndState(long userId, String state, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        BookingState bookingState;
-        try {
-            bookingState = BookingState.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown state: " + state);
-        }
         if (from != null && size != null) {
-            if (size < 1 || from < 0) {
-                throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
-            }
-            switch (bookingState) {
+            switch (BookingState.valueOf(state)) {
                 case ALL:
                     return bookingRepository.findByBookerIdOrderByStartDesc(userId, PageRequest.of(from / size, size));
                 case PAST:
@@ -113,7 +101,7 @@ public class BookingServiceImpl implements BookingService {
             }
             return bookingRepository.findByBookerIdOrderByStartDesc(userId, PageRequest.of(from / size, size));
         }
-        switch (bookingState) {
+        switch (BookingState.valueOf(state)) {
             case ALL:
                 return bookingRepository.findByBookerIdOrderByStartDesc(userId);
             case PAST:
@@ -140,17 +128,8 @@ public class BookingServiceImpl implements BookingService {
     public List<Booking> getAllBookingsByOwnerIdAndState(long userId, String state, Integer from, Integer size) {
         userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("User not found"));
-        BookingState bookingState;
-        try {
-            bookingState = BookingState.valueOf(state);
-        } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException("Unknown state: " + state);
-        }
         if (from != null && size != null) {
-            if (size < 1 || from < 0) {
-                throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
-            }
-            switch (bookingState) {
+            switch (BookingState.valueOf(state)) {
                 case ALL:
                     return bookingRepository.findByItemOwnerOrderByStartDesc(userId,
                             PageRequest.of(from / size, size));
@@ -179,7 +158,7 @@ public class BookingServiceImpl implements BookingService {
             }
             return bookingRepository.findByItemOwnerOrderByStartDesc(userId, PageRequest.of(from / size, size));
         }
-        switch (bookingState) {
+        switch (BookingState.valueOf(state)) {
             case ALL:
                 return bookingRepository.findByItemOwnerOrderByStartDesc(userId);
             case PAST:

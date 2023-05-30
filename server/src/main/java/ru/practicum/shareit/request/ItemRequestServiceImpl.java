@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -45,9 +44,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .orElseThrow(() -> new NotFoundException("User not found"));
         if (from == null || size == null) {
             return itemRequestRepository.findByRequestorId(userId);
-        }
-        if (size < 1 || from < 0) {
-            throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
         }
         List<ItemRequest> itemRequests = itemRequestRepository.findByRequestorIdNotOrderByCreatedDesc(userId,
                 PageRequest.of(from / size, size));

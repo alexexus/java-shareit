@@ -258,26 +258,12 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void getItemsByTextNotValid() {
-        assertThrows(ValidationException.class,
-                () -> service.getItemsByText("text", -1, 20));
-    }
-
-    @Test
     void getItemsByTextWithoutFromAndSize() {
         when(itemRepository.searchByText(anyString(), anyString())).thenReturn(Collections.emptyList());
 
         service.getItemsByText("text", null, null);
 
         verify(itemRepository, times(1)).searchByText("text", "text");
-        verifyNoMoreInteractions(itemRepository);
-    }
-
-    @Test
-    void getItemsByTextWithBlankText() {
-        List<Item> items = service.getItemsByText(" ", null, null);
-
-        assertThat(items).usingRecursiveComparison().isEqualTo(Collections.emptyList());
         verifyNoMoreInteractions(itemRepository);
     }
 
@@ -319,14 +305,6 @@ class ItemServiceImplTest {
 
         verify(itemRepository, times(1)).findByOwnerOrderById(1L);
         verifyNoMoreInteractions(itemRepository);
-    }
-
-    @Test
-    void getAllItemsByUserIdNotValid() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
-
-        assertThrows(ValidationException.class,
-                () -> service.getAllItemsByUserId(1L, -1, 20));
     }
 
     @Test

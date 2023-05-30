@@ -3,8 +3,7 @@ package ru.practicum.shareit.item.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import ru.practicum.shareit.model.Item;
-import ru.practicum.shareit.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import java.time.LocalDateTime;
 
@@ -17,9 +16,9 @@ public class CommentDto {
 
     private String text;
 
-    private Item item;
+    private ItemDto item;
 
-    private User author;
+    private UserDto author;
 
     private LocalDateTime created;
 }

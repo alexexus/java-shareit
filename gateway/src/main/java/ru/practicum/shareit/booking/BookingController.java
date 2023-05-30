@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import ru.practicum.shareit.OnCreate;
 import ru.practicum.shareit.booking.dto.BookingRequestDto;
 import ru.practicum.shareit.booking.dto.BookingState;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.PositiveOrZero;
 
@@ -32,9 +32,9 @@ public class BookingController {
     public ResponseEntity<Object> getBookings(@RequestHeader(USER_ID) Long userId,
                                               @RequestParam(name = "state", defaultValue = "ALL", required = false)
                                               String state,
-                                              @PositiveOrZero @RequestParam(name = "from", required = false, defaultValue = "0")
+                                              @PositiveOrZero @RequestParam(name = "from", defaultValue = "0")
                                               Integer from,
-                                              @Positive @RequestParam(name = "size", required = false, defaultValue = "10")
+                                              @Positive @RequestParam(name = "size", defaultValue = "10")
                                               Integer size) {
         BookingState bookingState = BookingState.from(state)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
@@ -45,9 +45,9 @@ public class BookingController {
     public ResponseEntity<Object> getBookingsByOwner(@RequestHeader(USER_ID) Long userId,
                                                      @RequestParam(name = "state", defaultValue = "ALL", required = false)
                                                      String state,
-                                                     @PositiveOrZero @RequestParam(name = "from", required = false, defaultValue = "0")
+                                                     @PositiveOrZero @RequestParam(name = "from", defaultValue = "0")
                                                      Integer from,
-                                                     @Positive @RequestParam(name = "size", required = false, defaultValue = "10")
+                                                     @Positive @RequestParam(name = "size", defaultValue = "10")
                                                      Integer size) {
         BookingState bookingState = BookingState.from(state)
                 .orElseThrow(() -> new IllegalArgumentException("Unknown state: " + state));
@@ -55,9 +55,9 @@ public class BookingController {
     }
 
     @PostMapping
-    public ResponseEntity<Object> bookItem(@RequestHeader(USER_ID) Long userId,
-                                           @RequestBody @Valid BookingRequestDto requestDto) {
-        return bookingClient.bookItem(userId, requestDto);
+    public ResponseEntity<Object> addBooking(@RequestHeader(USER_ID) Long userId,
+                                             @RequestBody @Validated(OnCreate.class) BookingRequestDto requestDto) {
+        return bookingClient.addBooking(userId, requestDto);
     }
 
     @PatchMapping("/{bookingId}")
@@ -68,9 +68,9 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public ResponseEntity<Object> getBooking(@RequestHeader(USER_ID) Long userId,
-                                             @PathVariable Long bookingId) {
-        return bookingClient.getBooking(userId, bookingId);
+    public ResponseEntity<Object> getBookingById(@RequestHeader(USER_ID) Long userId,
+                                                 @PathVariable Long bookingId) {
+        return bookingClient.getBookingById(userId, bookingId);
     }
 
     @DeleteMapping("/{bookingId}")

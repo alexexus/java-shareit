@@ -13,7 +13,6 @@ import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -84,14 +83,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> getItemsByText(String text, Integer from, Integer size) {
-        if (text.isBlank()) {
-            return Collections.emptyList();
-        }
         if (from == null || size == null) {
             return itemRepository.searchByText(text, text);
-        }
-        if (size < 1 || from < 0) {
-            throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
         }
         return itemRepository.searchByText(text, text, PageRequest.of(from / size, size));
     }
@@ -104,18 +97,12 @@ public class ItemServiceImpl implements ItemService {
             List<Item> items = itemRepository.findByOwnerOrderById(userId);
             return getItems(items);
         }
-        if (size < 1 || from < 0) {
-            throw new ValidationException("Size cannot be less than 1 and from cannot be less than 0");
-        }
         List<Item> items = itemRepository.findByOwnerOrderById(userId, PageRequest.of(from / size, size));
         return getItems(items);
     }
 
     @Override
     public Comment addComment(Comment comment, long userId, long itemId) {
-        if (comment.getText().isBlank()) {
-            throw new ValidationException("Text is empty");
-        }
         if (bookingRepository.findByItemIdAndBookerIdAndStatusIsAndEndIsBefore(itemId, userId, BookingConstant.APPROVED,
                 LocalDateTime.now()).isEmpty()) {
             throw new ValidationException("User did not rent this item");

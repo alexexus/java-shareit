@@ -119,25 +119,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void addBookingNotValidEnd() {
-        User user = User.builder().id(1L).build();
-        Item item = Item.builder().id(1L).available(true).owner(2L).build();
-        Booking booking = Booking.builder()
-                .id(1L)
-                .start(LocalDateTime.of(2000, 1, 1, 0, 0))
-                .end(LocalDateTime.of(1999, 1, 1, 0, 0))
-                .item(item)
-                .booker(user)
-                .status(BookingConstant.WAITING)
-                .build();
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(user));
-        when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-
-        assertThrows(ValidationException.class, () -> service.addBooking(booking, 1L));
-        verifyNoMoreInteractions(repository);
-    }
-
-    @Test
     void addBookingBookerIsItemOwner() {
         User booker = User.builder().id(1L).build();
         Item item = Item.builder().id(1L).available(true).owner(1L).build();
@@ -451,15 +432,6 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getAllBookingsByBookerIdAndStateNotValid() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
-
-        assertThrows(ValidationException.class,
-                () -> service.getAllBookingsByBookerIdAndState(1L, "ALL", -1, 20));
-        verifyNoMoreInteractions(repository);
-    }
-
-    @Test
     void getAllBookingsByBookerIdAndStateIllegalArgument() {
         when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
 
@@ -540,15 +512,6 @@ class BookingServiceImplTest {
         verify(repository, times(2))
                 .findByItemOwnerAndStatusIsOrderByStartDesc(anyLong(),
                         any(BookingConstant.class));
-        verifyNoMoreInteractions(repository);
-    }
-
-    @Test
-    void getAllBookingsByOwnerIdAndStateNotValid() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
-
-        assertThrows(ValidationException.class,
-                () -> service.getAllBookingsByOwnerIdAndState(1L, "ALL", -1, 20));
         verifyNoMoreInteractions(repository);
     }
 

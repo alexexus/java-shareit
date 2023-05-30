@@ -7,7 +7,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.PageRequest;
 import ru.practicum.shareit.exception.NotFoundException;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepository;
@@ -139,14 +138,6 @@ class ItemRequestServiceImplTest {
 
         verify(itemRequestRepository, times(1)).findByRequestorId(1L);
         verifyNoMoreInteractions(itemRequestRepository);
-    }
-
-    @Test
-    void getAllItemRequestsPageableNotValid() {
-        when(userRepository.findById(anyLong())).thenReturn(Optional.of(new User()));
-
-        assertThrows(ValidationException.class,
-                () -> service.getAllItemRequestsPageable(1L, -1, 20));
     }
 
     @Test

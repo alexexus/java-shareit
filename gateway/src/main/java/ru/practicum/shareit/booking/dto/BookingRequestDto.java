@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import ru.practicum.shareit.OnCreate;
-import ru.practicum.shareit.model.User;
+import ru.practicum.shareit.user.dto.UserDto;
 
 import javax.validation.constraints.Future;
 import javax.validation.constraints.FutureOrPresent;
@@ -26,9 +26,9 @@ public class BookingRequestDto {
     @NotNull(groups = {OnCreate.class})
     private LocalDateTime end;
 
-    private BookingConstant status;
+    private BookingStatus status;
 
-    private User booker;
+    private UserDto booker;
 
     private Long itemId;
 }
